@@ -4,7 +4,7 @@ class Logger
 {
   private domain : number;
   private prefix : string;
-  private format : string = 'kingchat %{public}s %{public}s';
+  private format : string = 'kingchat_mytest %{public}s %{public}s';
 
   constructor(prefix)
   {

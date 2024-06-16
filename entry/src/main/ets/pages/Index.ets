@@ -1,31 +1,34 @@
-/*
-# Copyright (c) 2024 Huawei Device Co., Ltd.
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-*/
-
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import testNapi from 'libentry.so';
 import image from '@ohos.multimedia.image';
 import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
 import camera from '@ohos.multimedia.camera';
+import Logger from '../utils/Logger'
+import {RoomClient} from '../kingchat/roomClient';
 
+//wss://inward.szkingdom.vip/kingchat/?roomId=0099&peerId=ulfp3xury07br9xz&videoMode=2
+const chatClient = new RoomClient({
+  roomId:'0099',
+  localStream:'',
+  displayName:'',
+  mode:'2',
+  protooUrl:'wss://inward.szkingdom.vip/kingchat',
+  videoContentHint:'',
+  forceAudioCodec:'',
+  audioContentHint:'',
+  canvas:'',
+  ctx:'',
+  canvasArea:''
+});
+chatClient.joinRoom();
+
+const logger = new Logger('index.ets');
 @Entry
 @Component
 struct Index {
 
    private dataSize: image.Size = {
-                  height: 640,
-                  width: 480
+                  height: 480,
+                  width: 640
                 };
   private receiver = image.createImageReceiver(this.dataSize, 2000, 8);
   private mXComponentController: XComponentController = new XComponentController;
@@ -34,6 +37,7 @@ struct Index {
   @State button0Txt: string = 'connect peer'
   @State button1Txt: string = 'connect server'
   @State button2Txt: string = 'show peer'
+  @State button4Txt: string = 'test'
 
   build() {
     Column() {
@@ -69,22 +73,48 @@ struct Index {
         }
         .layoutWeight(1)
         Column() {
+          Button(this.button4Txt)
+            .width(100)
+            .height(100)
+            .onClick(() => {
+                abilityAccessCtrl.createAtManager()
+                  .requestPermissionsFromUser(getContext(), ['ohos.permission.CAMERA'])
+                  .then(async () => {
+
+                    // let receiverSurfaceId: string = await this.receiver.getReceivingSurfaceId();
+                    // this.XComponentSurfaceId = this.mXComponentController.getXComponentSurfaceId();
+                    // testNapi.openCamera(receiverSurfaceId, this.XComponentSurfaceId);
+                    // // testNapi.changeCamera();
+                    // this.receiver.on('imageArrival', () => {
+                    //   console.log("imageArrival start");
+                    //   let img: image.Image = testNapi.createFromReceiver(this.receiver);
+                    //   if (img) {
+                    //     img.release();
+                    //   }
+                    // });
+
+
+
+                  })
+            })
+        }
+        .layoutWeight(1)
+        Column() {
           Button(this.button1Txt)
           .width(100)
           .height(100)
           .onClick(() => {
-            hilog.warn(0x0000,'mytest','tetets');
-            // if (testNapi.pcClientServerIsConnect()) {
-            //   testNapi.pcClientDisConnectServer();
-            //   this.button1Txt = "connect server";
-            //   logger.warn('tetets2');
-            //   hilog.debug(0x0000,'mytest','tetets');
-            // } else {
-            //   if (testNapi.pcClientInit("192.168.80.251", 8888) == 0) {
-            //     testNapi.pcClientConnectServer();
-            //     this.button1Txt = "disconnect server";
-            //   }
-            // }
+            logger.warn('mytest','tetets');
+            if (testNapi.pcClientServerIsConnect()) {
+              testNapi.pcClientDisConnectServer();
+              this.button1Txt = "connect server";
+              logger.debug('mytest','tetets');
+            } else {
+              if (testNapi.pcClientInit("192.168.80.252", 8888) == 0) {
+                testNapi.pcClientConnectServer();
+                this.button1Txt = "disconnect server";
+              }
+            }
           })
         }
         .layoutWeight(1)
@@ -114,15 +144,15 @@ struct Index {
           libraryname: '',
           controller: this.mXComponentController
         })
-          .width(640)
-          .height(480)
+          .width(480)
+          .height(640)
           .onLoad(() => {
             // 设置Surface宽高（1920*1080），预览尺寸设置参考前面 previewProfilesArray 获取的当前设备所支持的预览分辨率大小去设置
             // 预览流与录像输出流的分辨率的宽高比要保持一致
-            this.mXComponentController.setXComponentSurfaceSize({ surfaceWidth: 640, surfaceHeight: 480 });
+            this.mXComponentController.setXComponentSurfaceSize({ surfaceWidth: 480, surfaceHeight: 640 });
           })
       }
-      .layoutWeight(640)
+      .layoutWeight(480)
     }
     .height('100%')
   }

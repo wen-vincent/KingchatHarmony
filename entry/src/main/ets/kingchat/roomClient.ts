@@ -3,7 +3,9 @@ import {generateRandomString,generateRandomNumber, deviceInfo } from '../utils/U
 import WebSocketTransport from '../protooClient/transports/WebSocketTransport'
 import Peer from '../protooClient/Peer'
 import { EventEmitter } from '../polyfill/events';
-import { PC_PROPRIETARY_CONSTRAINTS, TRANSPORT_DIRECTION, VIDEO_MODE, MEDIA_SEND_STATE, MEDIA_IDENTITY } from '../utils/define'
+import { PC_PROPRIETARY_CONSTRAINTS, TRANSPORT_DIRECTION, VIDEO_MODE, MEDIA_SEND_STATE, MEDIA_IDENTITY } from '../utils/define';
+import testNapi from 'libentry.so';
+
 const  logger = new Logger('RoomClient');
 const uri = 'wss://inward.szkingdom.vip/kingchat/?roomId=zvu77sru&peerId=afuztkimrcojm6xy&videoMode=1';
 // const ws = new WebSocketTransport(uri,'protoo');
@@ -191,6 +193,7 @@ export class RoomClient extends EventEmitter {
       protooUrl += '/';
     }
     this._protooUrl = protooUrl + "?roomId=" + this._roomId + "&peerId=" + peerId + "&videoMode=" + this._videoMode;
+    logger.warn('_protooUrl:',this._protooUrl);
 
     // protoo-client Peer instance.
     // @type {protooClient.Peer}
@@ -291,17 +294,17 @@ export class RoomClient extends EventEmitter {
     const routerRtpCapabilities =
       await this._protoo.request('getRouterRtpCapabilities');
     logger.debug('getRouterRtpCapabilities',JSON.stringify(routerRtpCapabilities));
-    {
-      // urn:3gpp:video-orientation 字段
-      // 会让视频自动旋转
-      // 删除之后能得到正确视频,手机旋转之后图像跟着旋转
-      // producer中videoorientationchange事件,但是在服务器端拿到方向
-      // https://mediasoup.org/documentation/v3/mediasoup/api/
-
-      // 视频模糊和这里无关
-      routerRtpCapabilities.headerExtensions = routerRtpCapabilities.headerExtensions.
-      filter((ext) => ext.uri !== 'urn:3gpp:video-orientation');
-    }
+    // {
+    //   // urn:3gpp:video-orientation 字段
+    //   // 会让视频自动旋转
+    //   // 删除之后能得到正确视频,手机旋转之后图像跟着旋转
+    //   // producer中videoorientationchange事件,但是在服务器端拿到方向
+    //   // https://mediasoup.org/documentation/v3/mediasoup/api/
+    //
+    //   // 视频模糊和这里无关
+    //   routerRtpCapabilities.headerExtensions = routerRtpCapabilities.headerExtensions.
+    //   filter((ext) => ext.uri !== 'urn:3gpp:video-orientation');
+    // }
 
     // this._mediasoupDevice._extendedRtpCapabilities 本地和服务器都支持的编解码器,包含服务器的约束
     // this._mediasoupDevice.rtpCapabilities
@@ -317,7 +320,9 @@ export class RoomClient extends EventEmitter {
     //   'setRtpCapabilities', {
     //   rtpCapabilities: this._mediasoupDevice._extendedRtpCapabilities
     // });
-
+    // JSON rtpCapabilities;
+    const res = testNapi.getMediasoupDevice(JSON.stringify(routerRtpCapabilities));
+    logger.warn('gerRtpCapabilities',JSON.stringify(res));
   }
   async _connectMediastream() {
     try {

@@ -1,16 +1,19 @@
 import image from '@ohos.multimedia.image'
 
 export const createFromReceiver: (a: image.ImageReceiver) => image.Image;
-export const initCamera: (a: string, b: String) => void;
+export const initCamera: () => void;
 export const stopCamera: () => void;
 export const changeCamera: () => void;
 
-export const pcClientInit: (server: string, port: number) => number;
-export const pcClientConnectServer: () => number;
-export const pcClientConnectPeer: (a: string, b: String) => number;
-export const pcClientGetPeerName: (peerid: number) => string;
-export const pcClientGetPeers: () => number;
-export const pcClientDisConnectServer: () => number;
-export const pcClientDisConnectPeer: () =>number;
-export const pcClientServerIsConnect: () => boolean;
-export const pcClientPeerIsConnect: () => boolean;
+export const pcClientInit: (server: String, port: Number) => Number;
+export const pcClientConnectServer: () => Number;
+export const pcClientConnectPeer: (a: String, b: String) => Number;
+export const openCamera: (a: String, b: String) => Number;
+export const pcClientGetPeerName: (peerid: Number) => string;
+export const pcClientGetPeers: () => Number;
+export const pcClientDisConnectServer: () => Number;
+export const pcClientDisConnectPeer: () =>Number;
+export const pcClientServerIsConnect: () => Boolean;
+export const pcClientPeerIsConnect: () => Boolean;
+
+export const getMediasoupDevice: (a:String) => String;
