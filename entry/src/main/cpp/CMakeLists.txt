@@ -31,7 +31,7 @@ add_library(entry SHARED napi_init.cpp
                          ${WEBRTC_ADAPTER}/ohos_capturer_track_source.cpp
 						 ${CLIENT_SOURCE})
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libohaudio.so libohcamera.so libimage_ndk.z.so libimage_receiver_ndk.z.so libnative_image.so libnative_media_core.so libnative_media_venc.so libnative_media_codecbase.so)
-target_link_libraries(entry PUBLIC ${WEBRTC_LIB_PATH}/libmediasoupclient.a)
+#target_link_libraries(entry PUBLIC ${WEBRTC_LIB_PATH}/libmediasoupclient.a)
 target_link_libraries(entry PUBLIC ${WEBRTC_LIB_PATH}/libwebrtc.a)
 target_link_libraries(entry PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}../../../../libs/${OHOS_ARCH}/libffmpeg.so)
 

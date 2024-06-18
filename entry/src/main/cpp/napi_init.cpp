@@ -98,8 +98,7 @@ static napi_value PeerClientInit(napi_env env, napi_callback_info info)
 static napi_value PeerClientConnectServer(napi_env env, napi_callback_info info)
 {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectServer");
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", mediasoupclient::Version().c_str());
-
+chu
     auto *device = new mediasoupclient::Device();
 
     if (!GetServerConnect()) {
