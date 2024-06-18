@@ -27,8 +27,8 @@
 using json = nlohmann::json;
 
 
-static std::string GetMediasoupDevice(napi_env env,napi_callback_info info) {
-  OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice %{public}s \n");
+static napi_value GetMediasoupDevice(napi_env env,napi_callback_info info) {
+  OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice\n");
 
   // 获取参数
   size_t argc = 1;
@@ -54,9 +54,9 @@ static std::string GetMediasoupDevice(napi_env env,napi_callback_info info) {
     mediasoupclient::Initialize();
     
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "创建Device \n");
-    mediasoupclient::Device device; 
+    mediasoupclient::Device* device = new mediasoupclient::Device(); 
     try {
-        int num = device.Load(routerRtpCapabilities);
+        int num = device->Load(routerRtpCapabilities);
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "load %{public}d \n",num);
     } catch (...) {
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "catch \n");
@@ -64,11 +64,13 @@ static std::string GetMediasoupDevice(napi_env env,napi_callback_info info) {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "Load! \n");
 
     napi_value result2;
-    std::string rtpCapabilities = device.GetRtpCapabilities().dump();
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "Load! %{public}s %{public}d\n",rtpCapabilities.c_str(),rtpCapabilities.length());
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "Load! %{public}d\n",rtpCapabilities.length());
-    napi_create_string_utf8(env, rtpCapabilities.c_str(), rtpCapabilities.length()+1, &result2);
-    return rtpCapabilities;
+    std::string rtpCapabilities = device->GetRtpCapabilities().dump();
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "-----------------! %{public}s \n",rtpCapabilities.c_str());
+
+    //     napi_create_string_utf8(env, rtpCapabilities, strlen(rtpCapabilities), &result2);
+    //     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "-----------------! %{public}d %{public}s \n",
+    //     strlen(rtpCapabilities),result2);
+    return nullptr;
 }
 
 EXTERN_C_START

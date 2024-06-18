@@ -322,8 +322,10 @@ export class RoomClient extends EventEmitter {
     // });
     // JSON rtpCapabilities;
     const res = testNapi.getMediasoupDevice(JSON.stringify(routerRtpCapabilities));
-    logger.warn('gerRtpCapabilities',JSON.stringify(res));
+    // logger.warn('gerRtpCapabilities',JSON.stringify(res));
+    logger.warn('gerRtpCapabilities',res);
   }
+
   async _connectMediastream() {
     try {
       if (this._produce) {
