@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\Administrator\\.ohos\\config\\default_oh_web-rtc-master_5g1_HUvmodOlHkl6xMOBdPd7Ub-TYFHnoPx7lR7KNUM=.cer",
-          "storePassword": "0000001A9C07E060FA833D8DD4F00F9F7DD0F90C6C518BDDF5A5B3C8106160B591432D3E2C2E7D75A97A",
+          "certpath": "C:\\Users\\Administrator\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.cer",
+          "storePassword": "0000001BA5F64D9BB73FC098D361A193897938D1F6212BEFBE7437044153CE20EF3C2754755F8497D1C165",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001AC96300144B2281B7FC4E51A42C85E9B8C1F0F186B39BBD0C6AAED216F42AF8DDC83EAE72C4CE",
-          "profile": "C:\\Users\\Administrator\\.ohos\\config\\default_oh_web-rtc-master_5g1_HUvmodOlHkl6xMOBdPd7Ub-TYFHnoPx7lR7KNUM=.p7b",
+          "keyPassword": "0000001BFB32999334A1A0764D712D62CE52DAAA2D1C09CC4F5005B076F38BFA0F5F50EF21A120D8FF84B3",
+          "profile": "C:\\Users\\Administrator\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\Administrator\\.ohos\\config\\default_oh_web-rtc-master_5g1_HUvmodOlHkl6xMOBdPd7Ub-TYFHnoPx7lR7KNUM=.p12"
+          "storeFile": "C:\\Users\\Administrator\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p12"
         }
       }
     ],

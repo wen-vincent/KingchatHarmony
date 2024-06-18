@@ -73,7 +73,7 @@ static napi_value GetMediasoupDevice(napi_env env,napi_callback_info info) {
     auto routerRtpCapabilities = nlohmann::json::parse(test);
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "routerRtpCapabilities: %{public}s \n",routerRtpCapabilities.dump().c_str());
 
-    auto logLevel = mediasoupclient::Logger::LogLevel::LOG_TRACE;
+    auto logLevel = mediasoupclient::Logger::LogLevel::LOG_DEBUG;
     mediasoupclient::Logger::SetLogLevel(logLevel);
     mediasoupclient::Logger::SetDefaultHandler();
 
@@ -91,8 +91,7 @@ static napi_value GetMediasoupDevice(napi_env env,napi_callback_info info) {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "Load! \n");
 
     napi_value result2;
-//     auto rtpCapabilities = device.GetRtpCapabilities().dump();
-    std::string rtpCapabilities = "{test:test}";
+    auto rtpCapabilities = device.GetRtpCapabilities().dump();
     napi_create_string_utf8(env, rtpCapabilities.c_str(), rtpCapabilities.length(), &result2);
     return result2;
     
