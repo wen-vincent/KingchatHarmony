@@ -18,6 +18,8 @@ import testNapi from 'libentry.so';
 import image from '@ohos.multimedia.image';
 import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
 import camera from '@ohos.multimedia.camera';
+import  Logger from '../utils/Logger';
+const logger =new Logger('aaa');
 
 @Entry
 @Component
@@ -74,17 +76,17 @@ struct Index {
           .height(100)
           .onClick(() => {
             hilog.warn(0x0000,'mytest','tetets');
-            // if (testNapi.pcClientServerIsConnect()) {
-            //   testNapi.pcClientDisConnectServer();
-            //   this.button1Txt = "connect server";
-            //   logger.warn('tetets2');
-            //   hilog.debug(0x0000,'mytest','tetets');
-            // } else {
-            //   if (testNapi.pcClientInit("192.168.80.251", 8888) == 0) {
-            //     testNapi.pcClientConnectServer();
-            //     this.button1Txt = "disconnect server";
-            //   }
-            // }
+            if (testNapi.pcClientServerIsConnect()) {
+              testNapi.pcClientDisConnectServer();
+              this.button1Txt = "connect server";
+              logger.warn('tetets2');
+              hilog.debug(0x0000,'mytest','tetets');
+            } else {
+              if (testNapi.pcClientInit("192.168.80.252", 8888) == 0) {
+                testNapi.pcClientConnectServer();
+                this.button1Txt = "disconnect server";
+              }
+            }
           })
         }
         .layoutWeight(1)
