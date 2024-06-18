@@ -16,4 +16,4 @@ export const pcClientDisConnectPeer: () =>Number;
 export const pcClientServerIsConnect: () => Boolean;
 export const pcClientPeerIsConnect: () => Boolean;
 
-export const getMediasoupDevice: (a:String) => String;
+export const getMediasoupDevice: (a:String) => string;

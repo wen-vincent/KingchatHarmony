@@ -17,19 +17,9 @@ endif()
 include_directories(${NATIVERENDER_ROOT_PATH}
                     ${NATIVERENDER_ROOT_PATH}/include)
 
-set(CLIENT_SOURCE client/conductor.cc
-                  client/defaults.cc
-                  client/peer_connection_client.cc
-                  client/ohos/peer_sample.cc
-                  client/ohos/main_wnd.cc)
 
-add_library(entry SHARED napi_init.cpp
-                         ${WEBRTC_ADAPTER}/ohos_camera.cpp
-                         ${WEBRTC_ADAPTER}/ohos_codec_data.cpp
-                         ${WEBRTC_ADAPTER}/ohos_video_encoder.cpp
-                         ${WEBRTC_ADAPTER}/ohos_camera_capture.cpp
-                         ${WEBRTC_ADAPTER}/ohos_capturer_track_source.cpp
-						 ${CLIENT_SOURCE})
+
+add_library(entry SHARED napi_init.cpp)
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libohaudio.so libohcamera.so libimage_ndk.z.so libimage_receiver_ndk.z.so libnative_image.so libnative_media_core.so libnative_media_venc.so libnative_media_codecbase.so)
 target_link_libraries(entry PUBLIC ${WEBRTC_LIB_PATH}/libmediasoupclient.a)
 target_link_libraries(entry PUBLIC ${WEBRTC_LIB_PATH}/libsdptransform.a)
