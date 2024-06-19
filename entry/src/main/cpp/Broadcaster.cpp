@@ -256,7 +256,6 @@ std::future<std::string> Broadcaster::OnProduceData(
 }
 
 void Broadcaster::Start(
-  const std::string& baseUrl,
   bool enableAudio,
   bool useSimulcast,
   const json& routerRtpCapabilities,
@@ -264,7 +263,6 @@ void Broadcaster::Start(
 {
 	std::cout << "[INFO] Broadcaster::Start()" << std::endl;
 
-	this->baseUrl   = baseUrl;
 	this->verifySsl = verifySsl;
 
 	// Load the device.
@@ -301,7 +299,7 @@ void Broadcaster::Start(
 //
 // 		return;
 // 	}
-
+ 
 	this->CreateSendTransport(enableAudio, useSimulcast);
 	this->CreateRecvTransport();
 }

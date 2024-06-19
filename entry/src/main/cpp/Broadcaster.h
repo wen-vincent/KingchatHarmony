@@ -90,7 +90,6 @@ public:
 
 public:
 	void Start(
-	  const std::string& baseUrl,
 	  bool enableAudio,
 	  bool useSimulcast,
 	  const nlohmann::json& routerRtpCapabilities,
@@ -107,7 +106,6 @@ private:
 	mediasoupclient::DataConsumer* dataConsumer{ nullptr };
 
 	std::string id = std::to_string(rtc::CreateRandomId());
-	std::string baseUrl;
 	std::thread sendDataThread;
 
 	struct TimerKiller timerKiller;

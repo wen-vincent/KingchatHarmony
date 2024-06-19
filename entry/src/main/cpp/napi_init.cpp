@@ -30,6 +30,17 @@ Broadcaster broadcaster;
 
 using json = nlohmann::json;
 
+static napi_value InitMediasoup(napi_env env,napi_callback_info info) {
+    auto logLevel = mediasoupclient::Logger::LogLevel::LOG_DEBUG;
+    mediasoupclient::Logger::SetLogLevel(logLevel);
+    mediasoupclient::Logger::SetDefaultHandler();
+
+    // Initilize mediasoupclient.
+    mediasoupclient::Initialize();
+    
+    return true;
+}
+
 static napi_value GetMediasoupDevice(napi_env env,napi_callback_info info) {
   OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice\n");
 
@@ -47,34 +58,10 @@ static napi_value GetMediasoupDevice(napi_env env,napi_callback_info info) {
     napi_get_value_string_utf8(env, args[0], test, result1 + 1, &result1);
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice %{public}s \n",test);
     auto routerRtpCapabilities = nlohmann::json::parse(test);
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "routerRtpCapabilities: %{public}s \n",routerRtpCapabilities.dump().c_str());
-
-    auto logLevel = mediasoupclient::Logger::LogLevel::LOG_DEBUG;
-    mediasoupclient::Logger::SetLogLevel(logLevel);
-    mediasoupclient::Logger::SetDefaultHandler();
-
-    // Initilize mediasoupclient.
-    mediasoupclient::Initialize();
     
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "创建Device \n");
-    mediasoupclient::Device* device = new mediasoupclient::Device(); 
-    try {
-        int num = device->Load(routerRtpCapabilities);
-        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "load %{public}d \n",num);
-    } catch (...) {
-        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "catch \n");
-    }
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "Load! \n");
-
-    napi_value result;
-    std::string rtpCapabilities = device->GetRtpCapabilities().dump();
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "-----------------! %{public}s \n",rtpCapabilities.c_str());
-
-
-    napi_create_string_utf8(env, rtpCapabilities.c_str(), rtpCapabilities.length(), &result);
-    //     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "-----------------! %{public}d %{public}s \n",
-    //     strlen(rtpCapabilities),result2);
-    return result;
+    broadcaster.Start(true,  false, routerRtpCapabilities);
+    
+    return nullptr;
 }
 
 EXTERN_C_START
@@ -82,6 +69,7 @@ static napi_value Init(napi_env env, napi_value exports)
 {
   napi_property_descriptor desc[] = {
     {"getMediasoupDevice", nullptr, GetMediasoupDevice, nullptr, nullptr, nullptr, napi_default, nullptr},
+    {"initMediasoup", nullptr, InitMediasoup, nullptr, nullptr, nullptr, napi_default, nullptr},
   };
   napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
   return exports;

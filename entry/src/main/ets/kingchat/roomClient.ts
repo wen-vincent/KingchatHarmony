@@ -321,6 +321,7 @@ export class RoomClient extends EventEmitter {
     //   rtpCapabilities: this._mediasoupDevice._extendedRtpCapabilities
     // });
     // JSON rtpCapabilities;
+    const initInfo = testNapi.initMediasoup();
     const res = testNapi.getMediasoupDevice(JSON.stringify(routerRtpCapabilities));
     logger.warn('gerRtpCapabilities',JSON.stringify(res));
   }
@@ -589,6 +590,7 @@ export class RoomClient extends EventEmitter {
       logger.debug('创建protoo client成功!');
       this.emit('connected');
 
+      //初始化视频
       // 获取媒体信息
       await this._setRtpCapabilities();
 
