@@ -21,11 +21,14 @@
 #include <multimedia/image_framework/image_mdk.h>
 #include <multimedia/image_framework/image_receiver_mdk.h>
 #include <malloc.h>
-
+#include "Broadcaster.h"
 #include "json.hpp"
 #include "my_sum.h"
-using json = nlohmann::json;
 
+Broadcaster broadcaster;
+// broadcaster.Start(baseUrl, enableAudio, useSimulcast, response, verifySsl);
+
+using json = nlohmann::json;
 
 static napi_value GetMediasoupDevice(napi_env env,napi_callback_info info) {
   OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice\n");

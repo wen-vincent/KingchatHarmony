@@ -538,7 +538,7 @@ export class RoomClient extends EventEmitter {
         this._mediasoupDevice.sctpCapabilities : undefined
       });
     } catch (error) {
-      logger.error('_joinRoom() failed:%o', error);
+      logger.error('_joinRoom() failed:%{public}s', JSON.stringify(error));
       this.emit('closed', error);
       // this.close();
     }
