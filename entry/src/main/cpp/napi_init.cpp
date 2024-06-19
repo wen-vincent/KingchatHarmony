@@ -35,13 +35,13 @@ static napi_value GetMediasoupDevice(napi_env env,napi_callback_info info) {
   napi_value args[1] = {nullptr};
   napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
 
-  size_t result;
-  napi_get_value_string_utf8(env, args[0], nullptr, 0, &result);
-  if (result == 0) {
+  size_t result1;
+  napi_get_value_string_utf8(env, args[0], nullptr, 0, &result1);
+  if (result1 == 0) {
     return nullptr;
     }
-    char * test = new char[result + 1];
-    napi_get_value_string_utf8(env, args[0], test, result + 1, &result);
+    char * test = new char[result1 + 1];
+    napi_get_value_string_utf8(env, args[0], test, result1 + 1, &result1);
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice %{public}s \n",test);
     auto routerRtpCapabilities = nlohmann::json::parse(test);
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "routerRtpCapabilities: %{public}s \n",routerRtpCapabilities.dump().c_str());
@@ -63,14 +63,15 @@ static napi_value GetMediasoupDevice(napi_env env,napi_callback_info info) {
     }
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "Load! \n");
 
-    napi_value result2;
+    napi_value result;
     std::string rtpCapabilities = device->GetRtpCapabilities().dump();
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "-----------------! %{public}s \n",rtpCapabilities.c_str());
 
-    //     napi_create_string_utf8(env, rtpCapabilities, strlen(rtpCapabilities), &result2);
+
+    napi_create_string_utf8(env, rtpCapabilities.c_str(), rtpCapabilities.length(), &result);
     //     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "-----------------! %{public}d %{public}s \n",
     //     strlen(rtpCapabilities),result2);
-    return nullptr;
+    return result;
 }
 
 EXTERN_C_START
