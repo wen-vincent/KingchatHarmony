@@ -89,12 +89,13 @@ public:
 	void OnTransportClose(mediasoupclient::DataProducer* dataProducer) override;
 
 public:
-	void Start(
+	const nlohmann::json& Start(
 	  bool enableAudio,
 	  bool useSimulcast,
 	  const nlohmann::json& routerRtpCapabilities,
 	  bool verifySsl = true);
 	void Stop();
+    int CreateTransport(const nlohmann::json& transportInfo);
 
 	~Broadcaster();
 
@@ -114,8 +115,8 @@ private:
 	std::future<void> OnConnectSendTransport(const nlohmann::json& dtlsParameters);
 	std::future<void> OnConnectRecvTransport(const nlohmann::json& dtlsParameters);
 
-	void CreateSendTransport(bool enableAudio, bool useSimulcast);
-	void CreateRecvTransport();
+	void CreateSendTransport(bool enableAudio, bool useSimulcast,const nlohmann::json& transportInfo);
+	void CreateRecvTransport(const nlohmann::json& transportInfo);
 	void CreateDataConsumer();
 };
 

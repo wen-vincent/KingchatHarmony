@@ -322,228 +322,37 @@ export class RoomClient extends EventEmitter {
     // });
     // JSON rtpCapabilities;
     const initInfo = testNapi.initMediasoup();
-    const res = testNapi.getMediasoupDevice(JSON.stringify(routerRtpCapabilities));
-    logger.warn('gerRtpCapabilities',JSON.stringify(res));
-  }
+    if(initInfo)
+      logger.debug("初始化mediasoup成功",initInfo.toString());
 
-  async _connectMediastream() {
-    try {
-      if (this._produce) {
-        const transportInfo = await this._protoo.request(
-          'createWebRtcTransport', {
-          forceTcp: false,
-          producing: true,
-          consuming: false,
-          sctpCapabilities: this._useDataChannel ?
-          this._mediasoupDevice.sctpCapabilities : undefined
-        });
-
-        const {
-          id,
-          iceParameters,
-          iceCandidates,
-          dtlsParameters,
-          sctpParameters
-        } = transportInfo;
-        logger.debug('iceCandidates:', iceParameters, iceCandidates);
-
-        try {
-          this._sendTransport = this._mediasoupDevice.createSendTransport({
-            id,
-            iceParameters,
-            iceCandidates,
-            dtlsParameters,
-            sctpParameters,
-            iceServers: [],
-            proprietaryConstraints: PC_PROPRIETARY_CONSTRAINTS
-          });
-          this._sendTransport.bitrates = new Map();
-        } catch (e) {
-          logger.error('_connectMediastream', e);
-        }
-
-        try {
-          this._sendTransport.on(
-            'connect', ({
-                          dtlsParameters
-                        }, callback, errback) => // eslint-disable-line no-shadow
-          {
-            this._protoo.request(
-              'connectWebRtcTransport', {
-              transportId: this._sendTransport.id,
-              dtlsParameters
-            })
-              .then(callback)
-              .catch(errback);
-          });
-        } catch (e) {
-          logger.error('_connectMediastream', e);
-        }
-
-        // 先调用enableWebcam/produce()
-        // 然后响应这个回调
-        // 如果未指定编码器,则使用服务器默认的编码器
-        this._sendTransport.on(
-          'produce', async ({
-                              kind,
-                              rtpParameters,
-                              appData
-                            }, callback, errback) => {
-          try {
-            // eslint-disable-next-line no-shadow
-            logger.warn('appData', appData);
-            const {
-              id
-            } = await this._protoo.request(
-              'produce', {
-              transportId: this._sendTransport.id,
-              kind,
-              rtpParameters,
-              appData
-            });
-            callback({
-              id
-            });
-          } catch (error) {
-            errback(error);
-          }
-        });
-
-        this._sendTransport.on('producedata', async ({
-                                                       sctpStreamParameters,
-                                                       label,
-                                                       protocol,
-                                                       appData
-                                                     },
-                                                     callback,
-                                                     errback
-        ) => {
-          logger.debug(
-            '"producedata" event: [sctpStreamParameters:%o, appData:%o]',
-            sctpStreamParameters, appData);
-
-          try {
-            // eslint-disable-next-line no-shadow
-            const {
-              id
-            } = await this._protoo.request(
-              'produceData', {
-              transportId: this._sendTransport.id,
-              sctpStreamParameters,
-              label,
-              protocol,
-              appData
-            });
-
-            callback({
-              id
-            });
-          } catch (error) {
-            errback(error);
-          }
-        });
-
-        this._sendTransport.on('connectionstatechange', (connectionState) => {
-          logger.debug('connectionstatechange', connectionState);
-          if (connectionState === 'connected') {
-            // 只有首次和对方建立连接的时候,才会触发这个回调,之后不会触发
-            // 但是不是每次都会触发,不知道是不是bug
-            // 建立连接成功需要触发回调
-            logger.debug('connected');
-            this.emit('joined');
-
-            if (!this._getBitrateInterval) {
-              this._getBitrateInterval = setInterval(async () => {
-                let startTime = Date.now();
-                // let bitrateInfo = await this.getBitrate();
-                let duration = Date.now() - startTime;
-                // this.emit('getBitrate', bitrateInfo, duration);
-              }, 1000);
-            }
-          } else if (connectionState === 'failed') {
-            this.emit('error', '和视频服务器的连接出现错误!');
-          } else if (connectionState === 'connecting') {
-            // 连接中,视频通话中断线重连会触发
-            logger.warn('connecting...');
-            if (this._getBitrateInterval) {
-              clearInterval(this._getBitrateInterval);
-              this._getBitrateInterval = null;
-            }
-          } else if (connectionState === 'disconnected') {
-            // TODO: 断线重连
-            logger.warn('disconnected...');
-            if (this._getBitrateInterval) {
-              clearInterval(this._getBitrateInterval);
-              this._getBitrateInterval = null;
-            }
-          } else {
-            // 建立连接后,可能发生断线重连,暂时不做处理
-            // 自动重连时候不处理,如果不自动重连需要重连
-          }
-        });
-      }
-
-      // Create mediasoup Transport for receiving (unless we don't want to consume).
-      if (this._consume) {
-        const transportInfo = await this._protoo.request(
-          'createWebRtcTransport', {
-          forceTcp: false,
-          producing: false,
-          consuming: true,
-          sctpCapabilities: this._useDataChannel ?
-          this._mediasoupDevice.sctpCapabilities : undefined
-        });
-
-        const {
-          id,
-          iceParameters,
-          iceCandidates,
-          dtlsParameters,
-          sctpParameters
-        } = transportInfo;
+    const roomRtpCapabilities = testNapi.getMediasoupDevice(JSON.stringify(routerRtpCapabilities));
+    logger.debug('gerRtpCapabilities',JSON.stringify(roomRtpCapabilities));
 
 
-        // 用来接收数据
-        this._recvTransport = this._mediasoupDevice.createRecvTransport({
-          id,
-          iceParameters,
-          iceCandidates,
-          dtlsParameters,
-          sctpParameters,
-          iceServers: []
-        });
-
-        this._recvTransport.on(
-          'connect', ({
-                        dtlsParameters
-                      }, callback, errback) => // eslint-disable-line no-shadow
-        {
-          logger.debug("_recvTransport.on ('connect') callback: %s", callback);
-          this._protoo.request(
-            'connectWebRtcTransport', {
-            transportId: this._recvTransport.id,
-            dtlsParameters
-          })
-            .then(callback)
-            .catch(errback);
-        });
-      }
-
-      // wss连接
-      await this._protoo.request(
-        'join', {
-        displayName: this._displayName,
-        device: this._device,
-        rtpCapabilities: this._mediasoupDevice.rtpCapabilities,
-        sctpCapabilities: this._useDataChannel && this._consume ?
-        this._mediasoupDevice.sctpCapabilities : undefined
+    const transportInfo =
+      await this._protoo.request('createWebRtcTransport',{
+        forceTcp: false,
+        producing: true,
+        consuming: false,
+        sctpCapabilities: true
+      }).catch((err)=>{
+        logger.error('获取服务器信息失败',JSON.stringify(err));
       });
-    } catch (error) {
-      logger.error('_joinRoom() failed:%{public}s', JSON.stringify(error));
-      this.emit('closed', error);
-      // this.close();
-    }
+    logger.debug('transportInfo: ',JSON.stringify(transportInfo));
+
+    testNapi.connectMediastream(JSON.stringify(transportInfo));
+
+    // // wss连接
+    // await this._protoo.request(
+    //   'join', {
+    //   displayName: this._displayName,
+    //   device: this._device,
+    //   rtpCapabilities: this._mediasoupDevice.rtpCapabilities,
+    //   sctpCapabilities: this._useDataChannel && this._consume ?
+    //   this._mediasoupDevice.sctpCapabilities : undefined
+    // });
   }
+
 
   async joinRoom() {
     // 创建websockt通信,WebSocketTransport 是一种特殊处理过的websocket
@@ -594,7 +403,7 @@ export class RoomClient extends EventEmitter {
       // 获取媒体信息
       await this._setRtpCapabilities();
 
-      await this._connectMediastream();
+      // await this._connectMediastream();
 
       if (this._videoMode === VIDEO_MODE.SINGLE) { // 单向在这里推流
         logger.warn('pushed signal stream');
