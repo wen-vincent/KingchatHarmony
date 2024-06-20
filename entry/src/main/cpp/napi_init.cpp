@@ -23,7 +23,6 @@
 #include <malloc.h>
 #include "Broadcaster.h"
 #include "json.hpp"
-#include "my_sum.h"
 
 Broadcaster broadcaster;
 // broadcaster.Start(baseUrl, enableAudio, useSimulcast, response, verifySsl);
