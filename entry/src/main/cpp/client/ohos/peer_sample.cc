@@ -29,8 +29,6 @@
 #include "client/ohos/main_wnd.h"
 #include "client/ohos/peer_sample.h"
 
-#define LOG_TAG "peerClient"
-
 class CustomSocketServer : public rtc::PhysicalSocketServer {
 public:
     explicit CustomSocketServer(OhosMainWnd *wnd)
@@ -90,7 +88,7 @@ static bool gServerConnected = false;
 //int main(int argc, char* argv[]) {
 void *ClientThreadRun(void *params)
 {
-    RTC_LOG(LS_INFO) << LOG_TAG << "peerconnection client start test";
+    RTC_LOG(LS_INFO) << "peerconnection client start test" << " " << "测试奥术大师";
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "peerconnection client start test");
     OhosMainWnd *wnd = (OhosMainWnd *)params;
 
@@ -104,10 +102,8 @@ void *ClientThreadRun(void *params)
     auto conductor = rtc::make_ref_counted<Conductor>(&client, wnd);
     socket_server.set_client(&client);
     socket_server.set_conductor(conductor.get());
-    printf(LOG_TAG"before thread run ##############\r\n");
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "before thread run ##############");
     thread.Run();
-    printf(LOG_TAG"after thread run \r\n");
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "after thread run");
     rtc::CleanupSSL();
     gClientRunning = 0;
@@ -118,12 +114,10 @@ int PeerSampleClientStart(std::string server, int port)
 {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerSampleClientStart");
     if (gClientRunning) {
-        printf(LOG_TAG" PeerSampleClient has been Starting \r\n");
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerSampleClient has been Starting");
         return 1;
     }
     
-    printf(LOG_TAG" PeerSampleClientStart \r\n");
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerSampleClientStart");
     gClientRunning = 1;
     pthread_t clientThread;
@@ -131,19 +125,17 @@ int PeerSampleClientStart(std::string server, int port)
     webrtc::field_trial::InitFieldTrialsFromString(forced_field_trials.c_str());
 
     if ((absl::GetFlag(FLAGS_port) < 1) || (absl::GetFlag(FLAGS_port) > 65535)) {
-      printf(LOG_TAG"Error: %i is not a valid port.\n", absl::GetFlag(FLAGS_port));
       return -1;
     }
 //    const std::string server = absl::GetFlag(FLAGS_server);
     if (server == "") {
-        server = "192.168.3.71";
+        server = "192.168.80.252";
     }
-    g_wnd = new OhosMainWnd("192.168.3.71", 8888, absl::GetFlag(FLAGS_autoconnect),
+    g_wnd = new OhosMainWnd("192.168.80.252", 8888, absl::GetFlag(FLAGS_autoconnect),
                     absl::GetFlag(FLAGS_autocall));
     g_wnd->Create(server, port);
     if (pthread_create(&clientThread, nullptr, ClientThreadRun, g_wnd) < 0) {
         gClientRunning = 0;
-        printf(LOG_TAG" pthread_create failed \r\n");
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "pthread_create failed");
         return -1;
     }

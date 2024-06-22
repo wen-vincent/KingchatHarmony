@@ -20,7 +20,6 @@
 #include "ohos_capturer_track_source.h"
 #include "ohos_camera_capture.h"
 #include "ohos_camera.h"
-#include "mediasoupclient.hpp"
 #include <arm-linux-ohos/bits/alltypes.h>
 #include <multimedia/image_framework/image_mdk.h>
 #include <multimedia/image_framework/image_receiver_mdk.h>
@@ -98,9 +97,7 @@ static napi_value PeerClientInit(napi_env env, napi_callback_info info)
 static napi_value PeerClientConnectServer(napi_env env, napi_callback_info info)
 {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectServer");
-
-    auto *device = new mediasoupclient::Device();
-
+    
     if (!GetServerConnect()) {
         PeerSamplePostEvent(PEER_EVENT_CONNECT_SERVER);
     }
