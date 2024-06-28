@@ -106,7 +106,7 @@ static napi_value PeerClientConnectServer(napi_env env, napi_callback_info info)
     return result;
 }
 
-static napi_value PeerClientDisConnectServer(napi_env env, napi_callback_info info)
+static napi_value  PeerClientDisConnectServer(napi_env env, napi_callback_info info)
 {
     if (GetPeerConnect()) {
         PeerSamplePostEvent(PEER_EVENT_DISCONNECT_PEER);
