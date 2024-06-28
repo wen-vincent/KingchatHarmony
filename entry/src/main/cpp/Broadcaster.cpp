@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include "MediaStreamTrackFactory.h"
 #include "hilog/log.h"
 
 using json = nlohmann::json;
@@ -86,8 +87,8 @@ std::future<void> Broadcaster::OnConnectSendTransport(const json& dtlsParameters
 //
 // 		promise.set_exception(std::make_exception_ptr(r.text));
 // 	}
-
-	return promise.get_future();
+    promise.set_value();
+    return promise.get_future();
 }
 
 std::future<void> Broadcaster::OnConnectRecvTransport(const json& dtlsParameters)
@@ -120,7 +121,7 @@ std::future<void> Broadcaster::OnConnectRecvTransport(const json& dtlsParameters
 //
 // 		promise.set_exception(std::make_exception_ptr(r.text));
 // 	}
-
+promise.set_value();
 	return promise.get_future();
 }
 
@@ -189,7 +190,7 @@ std::future<std::string> Broadcaster::OnProduce(
 //
 // 		promise.set_exception(std::make_exception_ptr(r.text));
 // 	}
-
+    promise.set_value("testOnProduce");
 	return promise.get_future();
 }
 
@@ -249,7 +250,7 @@ std::future<std::string> Broadcaster::OnProduceData(
 //
 // 		promise.set_exception(std::make_exception_ptr(r.text));
 // 	}
-
+    promise.set_value("testOnProduceData");
 	return promise.get_future();
 }
 
@@ -301,7 +302,8 @@ const nlohmann::json& Broadcaster::Start(
 
 int Broadcaster::CreateTransport(const nlohmann::json &transportInfo) {
     this->CreateSendTransport(true, false,transportInfo);
-    this->CreateRecvTransport(transportInfo);    
+//     this->CreateRecvTransport(transportInfo);    
+    return 0;
 }
 
 void Broadcaster::CreateDataConsumer()
@@ -406,16 +408,16 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast,const 
     if (enableAudio && this->device.CanProduce("audio"))
 	{
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 开始推流 audio\n");
-        // 		auto audioTrack = createAudioTrack(std::to_string(rtc::CreateRandomId()));
-        //
-        // 		/* clang-format off */
-        // 		json codecOptions = {
-        // 			{ "opusStereo", true },
-        // 			{ "opusDtx",		true }
-        // 		};
-        // 		/* clang-format on */
-        //
-        // 		this->sendTransport->Produce(this, audioTrack, nullptr, &codecOptions, nullptr);
+        auto audioTrack = createAudioTrack(std::to_string(rtc::CreateRandomId()));
+
+        /* clang-format off */
+        json codecOptions = {
+            { "opusStereo", true },
+            { "opusDtx",		true }
+        };
+        /* clang-format on */
+
+        this->sendTransport->Produce(this, audioTrack.get(), nullptr, &codecOptions, nullptr);
 	}
 	else
 	{
@@ -427,21 +429,21 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast,const 
 	if (this->device.CanProduce("video"))
 	{
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 开始推流 video\n");
-        // 		auto videoTrack = createSquaresVideoTrack(std::to_string(rtc::CreateRandomId()));
-        //
-        // 		if (useSimulcast)
-        // 		{
-        // 			std::vector<webrtc::RtpEncodingParameters> encodings;
-        // 			encodings.emplace_back(webrtc::RtpEncodingParameters());
-        // 			encodings.emplace_back(webrtc::RtpEncodingParameters());
-        // 			encodings.emplace_back(webrtc::RtpEncodingParameters());
-        //
-        // 			this->sendTransport->Produce(this, videoTrack, &encodings, nullptr, nullptr);
-        // 		}
-        // 		else
-        // 		{
-        // 			this->sendTransport->Produce(this, videoTrack, nullptr, nullptr, nullptr);
-        // 		}
+        		auto videoTrack = createSquaresVideoTrack(std::to_string(rtc::CreateRandomId()));
+
+        		if (useSimulcast)
+        		{
+        			std::vector<webrtc::RtpEncodingParameters> encodings;
+        			encodings.emplace_back(webrtc::RtpEncodingParameters());
+        			encodings.emplace_back(webrtc::RtpEncodingParameters());
+        			encodings.emplace_back(webrtc::RtpEncodingParameters());
+
+        			this->sendTransport->Produce(this, videoTrack.get() ,&encodings, nullptr, nullptr);
+        		}
+        		else
+        		{
+        			this->sendTransport->Produce(this, videoTrack.get(), nullptr, nullptr, nullptr);
+        		}
 	}
 	else
 	{
@@ -469,11 +471,13 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast,const 
 // 		}
 // 	})
 // 	  .detach();
+
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::CreateSendTransport over--!!!------\n");
 }
 
 void Broadcaster::CreateRecvTransport(const nlohmann::json& transportInfo)
 {
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::CreateRecvTransport()\n");
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::CreateRecvTransport -----------\n");
 //     json sctpCapabilities = this->device.GetSctpCapabilities();
 	/* clang-format off */
 // 	json body =
