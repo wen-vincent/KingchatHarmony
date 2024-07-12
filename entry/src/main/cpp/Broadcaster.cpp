@@ -160,10 +160,9 @@ std::future<std::string> Broadcaster::OnProduce(
     napi_env env;
     std::string parm = rtpParameters.dump();
     std::future<std::string> fu = getProduceId->executeJs( env, true, parm);
-//     std::string id = fu.get();
-//     promise.set_value(id);
-//    
-    promise.set_value("1234567890video");
+    std::string id = fu.get();
+    promise.set_value(id);
+    
 	return promise.get_future();
     
 //     return getProduceId->executeJs( env, true);

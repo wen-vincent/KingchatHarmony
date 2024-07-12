@@ -100,6 +100,34 @@ static napi_value InitMediasoup(napi_env env, napi_callback_info info) {
     return result;
 }
 
+// static napi_value GetMediasoupDevice(napi_env env, napi_callback_info info) {
+//     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice\n");
+//
+//     // 获取参数
+//     size_t argc = 1;
+//     napi_value args[1] = {nullptr};
+//     napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+//
+//     size_t result1;
+//     napi_get_value_string_utf8(env, args[0], nullptr, 0, &result1);
+//     if (result1 == 0) {
+//         return nullptr;
+//     }
+//     char *test = new char[result1 + 1];
+//     napi_get_value_string_utf8(env, args[0], test, result1 + 1, &result1);
+//
+//     auto routerRtpCapabilities = nlohmann::json::parse(test);
+//
+//     const nlohmann::json roomRtpCapabilities = broadcaster.Start(true, false, routerRtpCapabilities);
+//
+//     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice %{public}s \n",
+//                  roomRtpCapabilities.dump().c_str());
+//
+//     napi_value result;
+//     napi_create_string_utf8(env, roomRtpCapabilities.dump().c_str(), roomRtpCapabilities.dump().length(), &result);
+//     return result;
+// }
+
 static napi_value GetMediasoupDevice(napi_env env, napi_callback_info info) {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice\n");
 
@@ -118,13 +146,10 @@ static napi_value GetMediasoupDevice(napi_env env, napi_callback_info info) {
 
     auto routerRtpCapabilities = nlohmann::json::parse(test);
 
-    const nlohmann::json roomRtpCapabilities = broadcaster.Start(true, false, routerRtpCapabilities);
-
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice %{public}s \n",
-                 roomRtpCapabilities.dump().c_str());
-
+    broadcaster.Start(true, false, routerRtpCapabilities);
+    
     napi_value result;
-    napi_create_string_utf8(env, roomRtpCapabilities.dump().c_str(), roomRtpCapabilities.dump().length(), &result);
+    napi_create_string_utf8(env, "test", NAPI_AUTO_LENGTH, &result);
     return result;
 }
 
@@ -144,11 +169,13 @@ static napi_value ConnectMediastream(napi_env env, napi_callback_info info) {
     char *test = new char[result1 + 1];
     napi_get_value_string_utf8(env, args[0], test, result1 + 1, &result1);
 
-    auto routerRtpCapabilities = nlohmann::json::parse(test);
+    nlohmann::json routerRtpCapabilities = nlohmann::json::parse(test);
     int res = broadcaster.CreateTransport(routerRtpCapabilities);
 
+//     std::thread t(&Broadcaster::CreateTransport,std::ref(broadcaster),std::ref(routerRtpCapabilities));
+//     t.detach();
     napi_value result;
-    napi_create_int64(env, res, &result);
+    napi_create_int64(env, 1, &result);
     return result;
 }
 
