@@ -11,7 +11,7 @@ const chatClient = new RoomClient({
   localStream:'',
   displayName:'',
   mode:'2',
-  protooUrl:'wss://inward.szkingdom.vip/kingchat',
+  protooUrl:'wss://kingchat.szkingdom.vip/kingchat/',
   videoContentHint:'',
   forceAudioCodec:'',
   audioContentHint:'',

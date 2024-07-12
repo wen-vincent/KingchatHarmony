@@ -11,6 +11,7 @@
 #include <thread>
 #include "MediaStreamTrackFactory.h"
 #include "hilog/log.h"
+#include "utils/utilCallJs.h"
 
 using json = nlohmann::json;
 
@@ -152,46 +153,20 @@ std::future<std::string> Broadcaster::OnProduce(
   const json& /*appData*/)
 {
 
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnProduce()\n");
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnProduce() %{public}u\n",std::this_thread::get_id());
 	std::promise<std::string> promise;
 
-	/* clang-format off */
-// 	json body =
-// 	{
-// 		{ "kind",          kind          },
-// 		{ "rtpParameters", rtpParameters }
-// 	};
-// 	/* clang-format on */
-//
-// 	auto r = cpr::PostAsync(
-// 	           cpr::Url{ this->baseUrl + "/broadcasters/" + this->id + "/transports/" +
-// 	                     this->sendTransport->GetId() + "/producers" },
-// 	           cpr::Body{ body.dump() },
-// 	           cpr::Header{ { "Content-Type", "application/json" } },
-// 	           cpr::VerifySsl{ verifySsl })
-// 	           .get();
-//
-// 	if (r.status_code == 200)
-// 	{
-// 		auto response = json::parse(r.text);
-//
-// 		auto it = response.find("id");
-// 		if (it == response.end() || !it->is_string())
-// 		{
-// 			promise.set_exception(std::make_exception_ptr("'id' missing in response"));
-// 		}
-//
-// 		promise.set_value((*it).get<std::string>());
-// 	}
-// 	else
-// 	{
-// 		std::cerr << "[ERROR] unable to create producer"
-// 		          << " [status code:" << r.status_code << ", body:\"" << r.text << "\"]" << std::endl;
-//
-// 		promise.set_exception(std::make_exception_ptr(r.text));
-// 	}
-    promise.set_value("testOnProduce");
+	// call js 
+    napi_env env;
+    std::string parm = rtpParameters.dump();
+    std::future<std::string> fu = getProduceId->executeJs( env, true, parm);
+//     std::string id = fu.get();
+//     promise.set_value(id);
+//    
+    promise.set_value("1234567890video");
 	return promise.get_future();
+    
+//     return getProduceId->executeJs( env, true);
 }
 
 /* Producer::Listener::OnProduceData

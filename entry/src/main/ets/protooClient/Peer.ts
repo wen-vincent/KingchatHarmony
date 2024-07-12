@@ -27,7 +27,6 @@ export default class Peer extends EventEmitter
 	constructor(transport)
 	{
 		super();
-		logger.debug('constructor()');
 
 		// Closed flag.
 		// @type {Boolean}

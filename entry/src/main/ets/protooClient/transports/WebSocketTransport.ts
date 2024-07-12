@@ -24,7 +24,7 @@ export default class WebSocketTransport extends EventEmitter
 	constructor(url, options)
 	{
 		super();
-		logger.debug(`constructor() [url:${url}, options:${options}]`);
+		logger.debug(`WebSocketTransport constructor() [url:${url}, options:${options}]`);
 
 		// Closed flag.
 		// @type {Boolean}
@@ -123,10 +123,8 @@ export default class WebSocketTransport extends EventEmitter
 			this._ws.on('error',(err: BusinessError, value: Object)=>{
 				if (this._closed)
 					return;
-				logger.debug('error'+' '+JSON.stringify(value));
-				this.emit('error',value);
-
-
+				logger.debug('WebSocketTransport connect error');
+				// this.emit('error',value);
 			});
 			this._ws.on('message',(err: BusinessError, value: Object)=>{
 				if (this._closed)

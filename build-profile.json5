@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\Administrator\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.cer",
-          "storePassword": "0000001BA5F64D9BB73FC098D361A193897938D1F6212BEFBE7437044153CE20EF3C2754755F8497D1C165",
+          "certpath": "C:\\Users\\viper\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.cer",
+          "storePassword": "0000001BE7B62115765DA9D30FF1E147BDF0DE5457C29B69345BB141ACA60569EBCE7B2F306A46B901EFC6",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001BFB32999334A1A0764D712D62CE52DAAA2D1C09CC4F5005B076F38BFA0F5F50EF21A120D8FF84B3",
-          "profile": "C:\\Users\\Administrator\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p7b",
+          "keyPassword": "0000001B0A1AC5A47B26AFE28FD18098D496537C8A49E3461C426AE16E70204B17BF2D1C319BF94D224D28",
+          "profile": "C:\\Users\\viper\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\Administrator\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p12"
+          "storeFile": "C:\\Users\\viper\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p12"
         }
       }
     ],
@@ -19,7 +19,6 @@
       {
         "name": "default",
         "signingConfig": "default",
-        "compileSdkVersion": "4.1.0(11)",
         "compatibleSdkVersion": "4.1.0(11)",
         "runtimeOS": "HarmonyOS",
       }

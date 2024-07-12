@@ -321,7 +321,15 @@ export class RoomClient extends EventEmitter {
     //   rtpCapabilities: this._mediasoupDevice._extendedRtpCapabilities
     // });
     // JSON rtpCapabilities;
-    const initInfo = testNapi.initMediasoup();
+    let callback = (): Promise<string> => {
+      return new Promise((resolve) => {
+
+          resolve("xxxxxxxxxxxxxxxxxxxxxx");
+
+      });
+    }
+    const initInfo = testNapi.initMediasoup(callback);
+
     if(initInfo)
       logger.debug("初始化mediasoup成功",initInfo.toString());
 
@@ -343,14 +351,14 @@ export class RoomClient extends EventEmitter {
     testNapi.connectMediastream(JSON.stringify(transportInfo));
 
     // // wss连接
-    // await this._protoo.request(
-    //   'join', {
-    //   displayName: this._displayName,
-    //   device: this._device,
-    //   rtpCapabilities: this._mediasoupDevice.rtpCapabilities,
-    //   sctpCapabilities: this._useDataChannel && this._consume ?
-    //   this._mediasoupDevice.sctpCapabilities : undefined
-    // });
+    await this._protoo.request(
+      'join', {
+      displayName: this._displayName,
+      device: this._device,
+      rtpCapabilities: this._mediasoupDevice.rtpCapabilities,
+      sctpCapabilities: this._useDataChannel && this._consume ?
+      this._mediasoupDevice.sctpCapabilities : undefined
+    });
   }
 
 
@@ -366,17 +374,18 @@ export class RoomClient extends EventEmitter {
           logger.debug('创建WebSocketTransport成功!');
         });
 
-        this._protooTransport.on('failed', (currentAttempt) => {
-          this.emit('reconnection', currentAttempt);
-          if (this._getBitrateInterval) {
-            clearInterval(this._getBitrateInterval);
-            this._getBitrateInterval = null;
-          }
-          if (currentAttempt >= 100) {
-            this._protooTransport.close();
-            this._protooTransport = null;
-            this.emit('error', '和视频服务器建立连接失败');
-          }
+        this._protooTransport.on('failed', () => {
+          logger.error('WebSocketTransport failed');
+          // this.emit('reconnection', currentAttempt);
+          // if (this._getBitrateInterval) {
+          //   clearInterval(this._getBitrateInterval);
+          //   this._getBitrateInterval = null;
+          // }
+          // if (currentAttempt >= 100) {
+          //   this._protooTransport.close();
+          //   this._protooTransport = null;
+          //   this.emit('error', '和视频服务器建立连接失败');
+          // }
         });
 
         this._protooTransport.on('close', (event) => {
