@@ -321,13 +321,25 @@ export class RoomClient extends EventEmitter {
     //   rtpCapabilities: this._mediasoupDevice._extendedRtpCapabilities
     // });
     // JSON rtpCapabilities;
-    let callback = (): Promise<string> => {
+
+    let callback = (parm:string): Promise<string> => {
+
+      logger.warn('get parm',parm);
       return new Promise((resolve) => {
 
           resolve("xxxxxxxxxxxxxxxxxxxxxx");
 
       });
     }
+
+    // let callback = (): Promise<string> => {
+    //   return this._protoo.request(
+    //     'produce', {
+    //     transportId: this._sendTransport.id,
+    //     kind,
+    //     rtpParameters,
+    //   });
+    // }
     const initInfo = testNapi.initMediasoup(callback);
 
     if(initInfo)
@@ -346,7 +358,7 @@ export class RoomClient extends EventEmitter {
       }).catch((err)=>{
         logger.error('获取服务器信息失败',JSON.stringify(err));
       });
-    logger.debug('transportInfo: ',JSON.stringify(transportInfo));
+    logger.debug('js get transportInfo: ',JSON.stringify(transportInfo));
 
     testNapi.connectMediastream(JSON.stringify(transportInfo));
 

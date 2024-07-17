@@ -25,6 +25,7 @@
 #include "json.hpp"
 // #include "httplib.h"
 #include "./utils/utilCallJs.h"
+#include <future>
 
 Broadcaster broadcaster;
 // broadcaster.Start(baseUrl, enableAudio, useSimulcast, response, verifySsl);
@@ -95,7 +96,7 @@ static napi_value InitMediasoup(napi_env env, napi_callback_info info) {
     utilCallJs* calljs = new utilCallJs;
     calljs->loadJs(env, info);
     broadcaster.getProduceId = calljs;
-    
+
     napi_create_int64(env, 1, &result);
     return result;
 }
@@ -154,7 +155,7 @@ static napi_value GetMediasoupDevice(napi_env env, napi_callback_info info) {
 }
 
 static napi_value ConnectMediastream(napi_env env, napi_callback_info info) {
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice\n");
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice %{public}u\n",std::this_thread::get_id());
 
     // 获取参数
     size_t argc = 1;
@@ -170,10 +171,11 @@ static napi_value ConnectMediastream(napi_env env, napi_callback_info info) {
     napi_get_value_string_utf8(env, args[0], test, result1 + 1, &result1);
 
     nlohmann::json routerRtpCapabilities = nlohmann::json::parse(test);
-    int res = broadcaster.CreateTransport(routerRtpCapabilities);
+//     int res = broadcaster.CreateTransport(routerRtpCapabilities);
 
-//     std::thread t(&Broadcaster::CreateTransport,std::ref(broadcaster),std::ref(routerRtpCapabilities));
-//     t.detach();
+    
+    std::thread t(&Broadcaster::CreateTransport,std::ref(broadcaster),routerRtpCapabilities);
+    t.detach();
     napi_value result;
     napi_create_int64(env, 1, &result);
     return result;

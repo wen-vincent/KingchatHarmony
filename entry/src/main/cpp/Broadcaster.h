@@ -96,7 +96,7 @@ public:
 	  const nlohmann::json& routerRtpCapabilities,
 	  bool verifySsl = true);
 	void Stop();
-    int CreateTransport(const nlohmann::json& transportInfo);
+    int CreateTransport(const nlohmann::json transportInfo);
     utilCallJs* getProduceId;
 	~Broadcaster();
 

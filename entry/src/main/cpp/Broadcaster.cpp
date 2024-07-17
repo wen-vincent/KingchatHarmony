@@ -158,11 +158,18 @@ std::future<std::string> Broadcaster::OnProduce(
 
 	// call js 
     napi_env env;
-    std::string parm = rtpParameters.dump();
-    std::future<std::string> fu = getProduceId->executeJs( env, true, parm);
+    json parm;
+    parm["kind"] =kind;
+    parm["rtpParameters"] =rtpParameters;
+//     parm["appData"] =appData;
+    std::string parmStr = parm.dump();
+    std::future<std::string> fu = getProduceId->executeJs( env, false, parmStr);
+//     return fu;
     std::string id = fu.get();
     promise.set_value(id);
-    
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::getid() %{public}s\n",id.c_str());
+//     std::this_thread::sleep_for(std::chrono::seconds(1));
+//     promise.set_value("1234567890"+kind);
 	return promise.get_future();
     
 //     return getProduceId->executeJs( env, true);
@@ -274,7 +281,9 @@ const nlohmann::json& Broadcaster::Start(
     return this->device.GetRtpCapabilities();
 }
 
-int Broadcaster::CreateTransport(const nlohmann::json &transportInfo) {
+int Broadcaster::CreateTransport(const nlohmann::json transportInfo) {
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "transportInfoaaaaaa %{public}s\n",__func__ );
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "transportInfoaaaaaa %{public}s\n",transportInfo.dump().c_str());
     this->CreateSendTransport(true, false,transportInfo);
 //     this->CreateRecvTransport(transportInfo);    
     return 0;
