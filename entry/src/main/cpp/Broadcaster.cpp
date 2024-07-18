@@ -159,14 +159,15 @@ std::future<std::string> Broadcaster::OnProduce(
 	// call js 
     napi_env env;
     json parm;
+    parm["id"] =this->sendTransport->GetId();
     parm["kind"] =kind;
     parm["rtpParameters"] =rtpParameters;
 //     parm["appData"] =appData;
     std::string parmStr = parm.dump();
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::setParm() %{public}s\n",parmStr.c_str());
     std::future<std::string> fu = getProduceId->executeJs( env, false, parmStr);
 //     return fu;
     std::string id = fu.get();
-    promise.set_value(id);
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::getid() %{public}s\n",id.c_str());
 //     std::this_thread::sleep_for(std::chrono::seconds(1));
 //     promise.set_value("1234567890"+kind);
@@ -284,8 +285,8 @@ const nlohmann::json& Broadcaster::Start(
 int Broadcaster::CreateTransport(const nlohmann::json transportInfo) {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "transportInfoaaaaaa %{public}s\n",__func__ );
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "transportInfoaaaaaa %{public}s\n",transportInfo.dump().c_str());
-    this->CreateSendTransport(true, false,transportInfo);
-//     this->CreateRecvTransport(transportInfo);    
+    this->CreateSendTransport(false, false,transportInfo);
+//     this->CreateRecvTransport(true, false,transportInfo);    
     return 0;
 }
 

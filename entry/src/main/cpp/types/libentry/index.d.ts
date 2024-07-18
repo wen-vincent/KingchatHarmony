@@ -17,6 +17,6 @@ export const pcClientServerIsConnect: () => Boolean;
 export const pcClientPeerIsConnect: () => Boolean;
 
 export const getMediasoupDevice: (a:String) => string;
-export const initMediasoup: (cb:()=>Promise<string>) => number;
+export const initMediasoup: (cb:(a:string)=>Promise<string>) => number;
 // export co initMediasoup: (cb:()=>Promise<string>) => Promise<number>;
 export const connectMediastream: (a:String) => Number;

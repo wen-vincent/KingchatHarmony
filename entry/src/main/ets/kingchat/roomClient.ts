@@ -322,24 +322,56 @@ export class RoomClient extends EventEmitter {
     // });
     // JSON rtpCapabilities;
 
+    // let callback = (parm:string): Promise<string> => {
+    //
+    //   logger.warn('get parm',parm);
+    //   return new Promise((resolve) => {
+    //
+    //       resolve("xxxxxxxxxxxxxxxxxxxxxx");
+    //
+    //   });
+    // }
+
+    // const initInfo = testNapi.initMediasoup(async (parm:string): Promise<string> => {
+    //   let  jspnParm = JSON.parse(parm);
+    //    return new Promise(async  (resolve,reject)=>{
+    //      logger.warn('js produce',jspnParm.kind);
+    //      await this._protoo.request(
+    //        'produce', {
+    //        transportId: this._sendTransport.id,
+    //        kind:jspnParm.kind,
+    //        rtpParameters:jspnParm.rtpParameters,
+    //      });
+    //      // const {id} = await this._protoo.request(
+    //      //   'produce', {
+    //      //   transportId: this._sendTransport.id,
+    //      //   kind:jspnParm.kind,
+    //      //   rtpParameters:jspnParm.rtpParameters,
+    //      // }).catch((err)=>{
+    //      //   logger.warn('js produce',err);
+    //      //   reject(err);
+    //      // });
+    //      // logger.warn('js produce',id);
+    //      // resolve (id);
+    //    });
+    // });
+
     let callback = (parm:string): Promise<string> => {
 
       logger.warn('get parm',parm);
-      return new Promise((resolve) => {
+      const jspnParm = JSON.parse(parm);
 
-          resolve("xxxxxxxxxxxxxxxxxxxxxx");
-
+      return new Promise(async (resolve,reject)=>{
+        await this._protoo.request('produce',{
+         transportId: jspnParm.id,
+         kind:jspnParm.kind,
+         rtpParameters:jspnParm.rtpParameters,
+        }).then(({id})=>{
+          resolve(id);
+        }).catch( error=>reject(error));
       });
     }
 
-    // let callback = (): Promise<string> => {
-    //   return this._protoo.request(
-    //     'produce', {
-    //     transportId: this._sendTransport.id,
-    //     kind,
-    //     rtpParameters,
-    //   });
-    // }
     const initInfo = testNapi.initMediasoup(callback);
 
     if(initInfo)
@@ -360,17 +392,18 @@ export class RoomClient extends EventEmitter {
       });
     logger.debug('js get transportInfo: ',JSON.stringify(transportInfo));
 
-    testNapi.connectMediastream(JSON.stringify(transportInfo));
 
     // // wss连接
     await this._protoo.request(
       'join', {
-      displayName: this._displayName,
+      displayName: "testHarmony",
       device: this._device,
-      rtpCapabilities: this._mediasoupDevice.rtpCapabilities,
-      sctpCapabilities: this._useDataChannel && this._consume ?
-      this._mediasoupDevice.sctpCapabilities : undefined
+      rtpCapabilities: routerRtpCapabilities,
+      sctpCapabilities: true
     });
+
+    testNapi.connectMediastream(JSON.stringify(transportInfo));
+
   }
 
 

@@ -112,6 +112,7 @@ private:
 
 	struct TimerKiller timerKiller;
 	bool verifySsl = true;
+//     std::string sendTransportId;
 
 	std::future<void> OnConnectSendTransport(const nlohmann::json& dtlsParameters);
 	std::future<void> OnConnectRecvTransport(const nlohmann::json& dtlsParameters);
