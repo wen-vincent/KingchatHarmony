@@ -2,6 +2,19 @@
   "app": {
     "signingConfigs": [
       {
+        "name": "home",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\13823\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.cer",
+          "storePassword": "0000001A923192EB8C0391DC98A0541296418C9A44AE6077ADF659D3885C65DBC5A20EBFB3C4A238CB84",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001AC13B57FEEBC8109ED85887709EE6F9C37BAF1B74D4065C8057E75C3392357A31E6BA167385AA",
+          "profile": "C:\\Users\\13823\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\13823\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p12"
+        }
+      },
+      {
         "name": "default",
         "type": "HarmonyOS",
         "material": {
@@ -18,7 +31,7 @@
     "products": [
       {
         "name": "default",
-        "signingConfig": "default",
+        "signingConfig": "home",
         "compatibleSdkVersion": "4.1.0(11)",
         "runtimeOS": "HarmonyOS",
       }

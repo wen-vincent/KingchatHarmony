@@ -98,6 +98,7 @@ public:
 	void Stop();
     int CreateTransport(const nlohmann::json transportInfo);
     utilCallJs* getProduceId;
+    utilCallJs* connectWebRtcTransport;
 	~Broadcaster();
 
 private:

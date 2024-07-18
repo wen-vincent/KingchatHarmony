@@ -358,18 +358,31 @@ export class RoomClient extends EventEmitter {
 
     let callback = (parm:string): Promise<string> => {
 
-      logger.warn('get parm',parm);
       const jspnParm = JSON.parse(parm);
 
       return new Promise(async (resolve,reject)=>{
-        await this._protoo.request('produce',{
-         transportId: jspnParm.id,
-         kind:jspnParm.kind,
-         rtpParameters:jspnParm.rtpParameters,
-        }).then(({id})=>{
-          resolve(id);
-        }).catch( error=>reject(error));
+        if (jspnParm.action === 'produce') {
+          logger.warn('calljs produce',jspnParm);
+          await this._protoo.request('produce',{
+            transportId: jspnParm.id,
+            kind:jspnParm.kind,
+            rtpParameters:jspnParm.rtpParameters,
+          }).then(({id})=>{
+            resolve(id);
+          }).catch( error=>reject(error));
+        }
+        else if (jspnParm.action === 'connectWebRtcTransport'){
+          logger.warn('calljs connectWebRtcTransport',jspnParm);
+          await this._protoo.request('connectWebRtcTransport', {
+            transportId: jspnParm.id,
+            dtlsParameters: jspnParm.dtlsParameters
+          }).then(()=>{
+            resolve("");
+          }).catch( error=>reject(error));
+        }
+
       });
+
     }
 
     const initInfo = testNapi.initMediasoup(callback);

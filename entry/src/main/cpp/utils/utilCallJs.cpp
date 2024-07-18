@@ -81,6 +81,7 @@ void utilCallJs::CallJs(napi_env env, napi_value jsCb, void *context, void *data
  void utilCallJs::WorkComplete(napi_env env, napi_status status, void *data)
 {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "StartThread %{public}s %{public}zu\n",__func__,std::this_thread::get_id() );
+    return;
     CallbackData *callbackData = reinterpret_cast<CallbackData *>(data);
     napi_release_threadsafe_function(callbackData->tsfn, napi_tsfn_release);
     napi_delete_async_work(env, callbackData->work);
@@ -124,6 +125,7 @@ std::future<std::string> utilCallJs::executeJs(napi_env env, bool isMainThread,s
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "%{public}s::在线程%{public}u中，直接调用\n",__func__ ,std::this_thread::get_id());
         utilCallJs::ExecuteWork(env,this->callbackData);
     }
+    this->prom = std::promise<std::string>();
     return this->prom.get_future();
 }
 
