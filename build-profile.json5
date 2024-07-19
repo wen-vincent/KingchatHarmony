@@ -6,9 +6,9 @@
         "type": "HarmonyOS",
         "material": {
           "certpath": "C:\\Users\\viper\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.cer",
-          "storePassword": "0000001BE7B62115765DA9D30FF1E147BDF0DE5457C29B69345BB141ACA60569EBCE7B2F306A46B901EFC6",
+          "storePassword": "0000001BBEC412AD38F7ED7AEC0EA49AF4973F968881A651058BD2216E3775B12F00A6AA994D20983CAF8A",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B0A1AC5A47B26AFE28FD18098D496537C8A49E3461C426AE16E70204B17BF2D1C319BF94D224D28",
+          "keyPassword": "0000001B16242D63714CE9617901D762B383382AE14F3F3DDECEBCA5815897486BB7C158830AC5A045736C",
           "profile": "C:\\Users\\viper\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\viper\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p12"
@@ -19,8 +19,8 @@
       {
         "name": "default",
         "signingConfig": "default",
-        "compatibleSdkVersion": "4.1.0(11)",
-        "runtimeOS": "HarmonyOS",
+        "compatibleSdkVersion": "5.0.0(12)",
+        "runtimeOS": "HarmonyOS"
       }
     ],
     "buildModeSet": [
