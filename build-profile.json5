@@ -6,9 +6,9 @@
         "type": "HarmonyOS",
         "material": {
           "certpath": "C:\\Users\\viper\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.cer",
-          "storePassword": "0000001A6246CF4365D62D6B5A585157969958221A2CE56225BF7A0DD089FE8A876FCA32BB881837FAA7",
+          "storePassword": "0000001BBEC412AD38F7ED7AEC0EA49AF4973F968881A651058BD2216E3775B12F00A6AA994D20983CAF8A",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001AC37A1DD94C8D5FEBA8E8A56B8E97B02F38F10A923D4D54DD40BA31726A602381970B28667063",
+          "keyPassword": "0000001B16242D63714CE9617901D762B383382AE14F3F3DDECEBCA5815897486BB7C158830AC5A045736C",
           "profile": "C:\\Users\\viper\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\viper\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p12"
