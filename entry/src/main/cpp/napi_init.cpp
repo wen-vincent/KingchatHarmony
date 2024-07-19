@@ -25,7 +25,16 @@
 #include "json.hpp"
 // #include "httplib.h"
 #include "./utils/utilCallJs.h"
-#include <future>
+#include "api/scoped_refptr.h"
+#include "pc/video_track_source.h"
+#include "ohos_capturer_track_source.h"
+#include "ohos_camera_capture.h"
+#include "ohos_camera.h"
+#include <arm-linux-ohos/bits/alltypes.h>
+#include <multimedia/image_framework/image_mdk.h>
+#include <multimedia/image_framework/image_receiver_mdk.h>
+#include <malloc.h>
+#include "client/ohos/peer_sample.h"
 
 Broadcaster broadcaster;
 // broadcaster.Start(baseUrl, enableAudio, useSimulcast, response, verifySsl);
