@@ -14,6 +14,18 @@
 #include "api/video_codecs/builtin_video_decoder_factory.h"
 #include "api/video_codecs/builtin_video_encoder_factory.h"
 
+#include "api/video_codecs/video_decoder_factory_template.h"
+#include "api/video_codecs/video_decoder_factory_template_dav1d_adapter.h"
+#include "api/video_codecs/video_decoder_factory_template_libvpx_vp8_adapter.h"
+#include "api/video_codecs/video_decoder_factory_template_libvpx_vp9_adapter.h"
+#include "api/video_codecs/video_decoder_factory_template_open_h264_adapter.h"
+#include "api/video_codecs/video_encoder_factory_template.h"
+#include "api/video_codecs/video_encoder_factory_template_libaom_av1_adapter.h"
+#include "api/video_codecs/video_encoder_factory_template_libvpx_vp8_adapter.h"
+#include "api/video_codecs/video_encoder_factory_template_libvpx_vp9_adapter.h"
+#include "api/video_codecs/video_encoder_factory_template_open_h264_adapter.h"
+#include "hilog/log.h"
+
 using namespace mediasoupclient;
 
 static rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory;
@@ -26,6 +38,7 @@ static rtc::Thread *signalingThread;
 static rtc::Thread *workerThread;
 
 static void createFactory() {
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] createFactory\n");
     networkThread = rtc::Thread::Create().release();
     signalingThread = rtc::Thread::Create().release();
     workerThread = rtc::Thread::Create().release();
@@ -45,11 +58,30 @@ static void createFactory() {
         MSC_THROW_INVALID_STATE_ERROR("audio capture module creation errored");
     }
 
-    factory = webrtc::CreatePeerConnectionFactory(
-        networkThread, workerThread, signalingThread, fakeAudioCaptureModule,
-        webrtc::CreateBuiltinAudioEncoderFactory(), webrtc::CreateBuiltinAudioDecoderFactory(),
-        webrtc::CreateBuiltinVideoEncoderFactory(), webrtc::CreateBuiltinVideoDecoderFactory(), nullptr /*audio_mixer*/,
-        nullptr /*audio_processing*/);
+    // 创建编码器
+//     factory = webrtc::CreatePeerConnectionFactory(
+//         networkThread, workerThread, signalingThread, fakeAudioCaptureModule,
+//         webrtc::CreateBuiltinAudioEncoderFactory(), webrtc::CreateBuiltinAudioDecoderFactory(),
+//         webrtc::CreateBuiltinVideoEncoderFactory(), webrtc::CreateBuiltinVideoDecoderFactory(), nullptr /*audio_mixer*/,
+//         nullptr /*audio_processing*/);
+    
+    // oh_webrtc代码
+    factory =  webrtc::CreatePeerConnectionFactory(
+      nullptr /* network_thread */, nullptr /* worker_thread */,
+      signalingThread, nullptr /* default_adm */,
+      webrtc::CreateBuiltinAudioEncoderFactory(),
+      webrtc::CreateBuiltinAudioDecoderFactory(),
+      std::make_unique<webrtc::VideoEncoderFactoryTemplate<
+          webrtc::LibvpxVp8EncoderTemplateAdapter,
+          webrtc::LibvpxVp9EncoderTemplateAdapter,
+          webrtc::OpenH264EncoderTemplateAdapter,
+          webrtc::LibaomAv1EncoderTemplateAdapter>>(),
+      std::make_unique<webrtc::VideoDecoderFactoryTemplate<
+          webrtc::LibvpxVp8DecoderTemplateAdapter,
+          webrtc::LibvpxVp9DecoderTemplateAdapter,
+          webrtc::OpenH264DecoderTemplateAdapter,
+          webrtc::Dav1dDecoderTemplateAdapter>>(),
+      nullptr /* audio_mixer */, nullptr /* audio_processing */);
 
     if (!factory) {
         MSC_THROW_ERROR("error ocurred creating peerconnection factory");
@@ -58,14 +90,16 @@ static void createFactory() {
 
 // Audio track creation.
 rtc::scoped_refptr<webrtc::AudioTrackInterface> createAudioTrack(const std::string &label) {
+    
+    
     if (!factory)
         createFactory();
 
-    cricket::AudioOptions options;
-    options.highpass_filter = false;
-
-    rtc::scoped_refptr<webrtc::AudioSourceInterface> source = factory->CreateAudioSource(options);
-
+//     cricket::AudioOptions options;
+//     options.highpass_filter = false;
+//     rtc::scoped_refptr<webrtc::AudioSourceInterface> source = factory->CreateAudioSource(options);
+    // oh_webrtc
+ rtc::scoped_refptr<webrtc::AudioSourceInterface> source = factory->CreateAudioSource(cricket::AudioOptions());
     return factory->CreateAudioTrack(label, source.get());
 }
 

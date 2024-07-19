@@ -32,58 +32,17 @@ Broadcaster broadcaster;
 
 using json = nlohmann::json;
 
-napi_threadsafe_function tsfn; // 线程安全函数
-static int g_cValue;           // 保存value最新的值,作为参数传给js回调函数
-int g_threadNum = 3;           // 线程数
+static napi_value InitCamera(napi_env env, napi_callback_info info) {
+    webrtc::ohos::OhosCamera::GetInstance().Init(env, info);
+    rtc::scoped_refptr<webrtc::ohos::CapturerTrackSource> ohos_cts = webrtc::ohos::CapturerTrackSource::Create();
 
-struct CallbackContext {
-    napi_async_work asyncWork = nullptr;
-    napi_env env = nullptr;
-    napi_ref callbackRef = nullptr;
-    int retData = 0;
-};
-
-// 安全函数回调
-static void ThreadSafeCallJs(napi_env env, napi_value js_cb, void *context, void *data) {
-    CallbackContext *argContent = (CallbackContext *)data;
-    if (argContent != nullptr) {
-        OH_LOG_INFO(LOG_APP, "ThreadSafeTest CallJs start, retData:[%{public}d]", argContent->retData);
-        napi_get_reference_value(env, argContent->callbackRef, &js_cb);
-    } else {
-        OH_LOG_INFO(LOG_APP, "ThreadSafeTest CallJs argContent is null");
-        return;
-    }
-
-    napi_valuetype valueType = napi_undefined;
-    napi_typeof(env, js_cb, &valueType);
-    if (valueType != napi_valuetype::napi_function) {
-        OH_LOG_ERROR(LOG_APP, "ThreadSafeTest callback param is not function");
-        if (argContent != nullptr) {
-            napi_delete_reference(env, argContent->callbackRef);
-            delete argContent;
-            argContent = nullptr;
-            OH_LOG_INFO(LOG_APP, "ThreadSafeTest delete argContent");
-        }
-        return;
-    }
-    // 将当前value值作为参数调用js函数
-    napi_value argv;
-    napi_create_int32(env, g_cValue, &argv);
-    napi_value result = nullptr;
-    napi_call_function(env, nullptr, js_cb, 1, &argv, &result);
-    // g_cValue保存调用js后的返回结果
-    napi_get_value_int32(env, result, &g_cValue);
-    OH_LOG_INFO(LOG_APP, "ThreadSafeTest CallJs end, [%{public}d]", g_cValue);
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "ThreadSafeTest CallJs end, [%{public}d]", g_cValue);
-
-    if (argContent != nullptr) {
-        napi_delete_reference(env, argContent->callbackRef);
-        delete argContent;
-        argContent = nullptr;
-        OH_LOG_INFO(LOG_APP, "ThreadSafeTest delete argContent end");
-    }
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "had been try create");
+    return nullptr;
 }
-
+static napi_value StopCamera(napi_env env, napi_callback_info info) {
+    webrtc::ohos::OhosCamera::GetInstance().StopCamera();
+    return nullptr;
+}
 static napi_value InitMediasoup(napi_env env, napi_callback_info info) {
     auto logLevel = mediasoupclient::Logger::LogLevel::LOG_DEBUG;
     mediasoupclient::Logger::SetLogLevel(logLevel);

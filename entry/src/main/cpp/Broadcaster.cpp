@@ -285,7 +285,7 @@ const nlohmann::json& Broadcaster::Start(
 int Broadcaster::CreateTransport(const nlohmann::json transportInfo) {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "transportInfoaaaaaa %{public}s\n",__func__ );
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "transportInfoaaaaaa %{public}s\n",transportInfo.dump().c_str());
-    this->CreateSendTransport(false, false,transportInfo);
+    this->CreateSendTransport(true, false,transportInfo);
 //     this->CreateRecvTransport(true, false,transportInfo);    
     return 0;
 }
@@ -391,17 +391,17 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast,const 
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 4444444444444444444444\n");
     if (enableAudio && this->device.CanProduce("audio"))
 	{
-        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 开始推流 audio\n");
-        auto audioTrack = createAudioTrack(std::to_string(rtc::CreateRandomId()));
-
-        /* clang-format off */
-        json codecOptions = {
-            { "opusStereo", true },
-            { "opusDtx",		true }
-        };
-        /* clang-format on */
-
-        this->sendTransport->Produce(this, audioTrack.get(), nullptr, &codecOptions, nullptr);
+//         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 开始推流 audio\n");
+//         auto audioTrack = createAudioTrack(std::to_string(rtc::CreateRandomId()));
+//
+//         /* clang-format off */
+//         json codecOptions = {
+//             { "opusStereo", true },
+//             { "opusDtx",		true }
+//         };
+//         /* clang-format on */
+//
+//         this->sendTransport->Produce(this, audioTrack.get(), nullptr, &codecOptions, nullptr);
 	}
 	else
 	{
