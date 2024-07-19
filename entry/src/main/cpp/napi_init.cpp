@@ -52,6 +52,51 @@ static napi_value StopCamera(napi_env env, napi_callback_info info) {
     webrtc::ohos::OhosCamera::GetInstance().StopCamera();
     return nullptr;
 }
+
+static napi_value InitCameraAndCreatTrack(napi_env env, napi_callback_info info) {
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectPeer");
+    webrtc::ohos::OhosCamera::GetInstance().Init(env, info);
+//     rtc::scoped_refptr<webrtc::ohos::CapturerTrackSource> ohos_cts = webrtc::ohos::CapturerTrackSource::Create();
+    
+    uint32_t camera_index = webrtc::ohos::OhosCamera::GetInstance().GetCameraIndex();
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectPeer %{public}d",camera_index);
+    camera_index = camera_index <= 1 ? 1 - camera_index : 0 ;
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectPeer %{public}d",camera_index);
+    webrtc::ohos::OhosCamera::GetInstance().SetCameraIndex(camera_index);
+    webrtc::ohos::OhosCamera::GetInstance().InitCamera();
+    webrtc::ohos::OhosCamera::GetInstance().SetCameraIndex(camera_index);
+    webrtc::ohos::OhosCamera::GetInstance().StartCamera();
+//     if (!GetPeerConnect()) {
+//         PeerSamplePostEvent(PEER_EVENT_CONNECT_PEER);
+//     }
+
+    napi_value result;
+    napi_create_int32(env, 0, &result);
+    return result;
+}
+
+static napi_value CreateFromReceiver(napi_env env, napi_callback_info info) {
+    size_t argc = 1;
+    napi_value args[1] = {nullptr};
+    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+    napi_valuetype value_type;
+    napi_typeof(env, args[0], &value_type);
+    napi_ref reference;
+    napi_create_reference(env, args[0], 1, &reference);
+    napi_value img_receiver_js;
+    napi_get_reference_value(env, reference, &img_receiver_js);
+
+    ImageReceiverNative *img_receiver_c = OH_Image_Receiver_InitImageReceiverNative(env, img_receiver_js);
+    napi_value next_image = webrtc::ohos::OhosCamera::GetInstance().GetImageData(env, img_receiver_c);
+
+    int32_t ret = OH_Image_Receiver_Release(img_receiver_c);
+    if (ret != 0) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "OH_Image_Receiver_Release failed");
+        return nullptr;
+    }
+    return next_image;
+}
+
 static napi_value InitMediasoup(napi_env env, napi_callback_info info) {
     auto logLevel = mediasoupclient::Logger::LogLevel::LOG_DEBUG;
     mediasoupclient::Logger::SetLogLevel(logLevel);
@@ -156,6 +201,8 @@ static napi_value Init(napi_env env, napi_value exports) {
         {"getMediasoupDevice", nullptr, GetMediasoupDevice, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"initMediasoup", nullptr, InitMediasoup, nullptr, nullptr, nullptr, napi_default, callbackData},
         {"connectMediastream", nullptr, ConnectMediastream, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"initCameraAndCreatTrack", nullptr, InitCameraAndCreatTrack, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"createFromReceiver", nullptr, CreateFromReceiver, nullptr, nullptr, nullptr, napi_default, nullptr},
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;

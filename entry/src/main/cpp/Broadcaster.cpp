@@ -13,6 +13,7 @@
 #include "hilog/log.h"
 #include "utils/utilCallJs.h"
 
+
 using json = nlohmann::json;
 
 Broadcaster::~Broadcaster()
@@ -391,7 +392,7 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast,const 
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 4444444444444444444444\n");
     if (enableAudio && this->device.CanProduce("audio"))
 	{
-//         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 开始推流 audio\n");
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 开始推流 audio\n");
 //         auto audioTrack = createAudioTrack(std::to_string(rtc::CreateRandomId()));
 //
 //         /* clang-format off */
@@ -413,8 +414,12 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast,const 
 	if (this->device.CanProduce("video"))
 	{
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 开始推流 video\n");
-        		auto videoTrack = createSquaresVideoTrack(std::to_string(rtc::CreateRandomId()));
+        
 
+            
+//         auto videoTrack = createSquaresVideoTrack(std::to_string(rtc::CreateRandomId()));
+        auto videoTrack = createVideoTrack(std::to_string(rtc::CreateRandomId()));
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 开始推流 video %{public}d\n",videoTrack.get()->id().c_str());
         		if (useSimulcast)
         		{
         			std::vector<webrtc::RtpEncodingParameters> encodings;

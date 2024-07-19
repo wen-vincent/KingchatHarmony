@@ -82,17 +82,18 @@ struct Index {
                   .requestPermissionsFromUser(getContext(), ['ohos.permission.CAMERA'])
                   .then(async () => {
 
-                    // let receiverSurfaceId: string = await this.receiver.getReceivingSurfaceId();
-                    // this.XComponentSurfaceId = this.mXComponentController.getXComponentSurfaceId();
+                    let receiverSurfaceId: string = await this.receiver.getReceivingSurfaceId();
+                    this.XComponentSurfaceId = this.mXComponentController.getXComponentSurfaceId();
+                    // testNapi.initCameraAndCreatTrack(receiverSurfaceId, this.XComponentSurfaceId);
                     // testNapi.openCamera(receiverSurfaceId, this.XComponentSurfaceId);
-                    // // testNapi.changeCamera();
-                    // this.receiver.on('imageArrival', () => {
-                    //   console.log("imageArrival start");
-                    //   let img: image.Image = testNapi.createFromReceiver(this.receiver);
-                    //   if (img) {
-                    //     img.release();
-                    //   }
-                    // });
+                    // testNapi.changeCamera();
+                    this.receiver.on('imageArrival', () => {
+                      console.log("imageArrival start");
+                      let img: image.Image = testNapi.createFromReceiver(this.receiver);
+                      if (img) {
+                        img.release();
+                      }
+                    });
 
                     const chatClient = new RoomClient({
                       roomId:'0099',
@@ -107,8 +108,8 @@ struct Index {
                       ctx:'',
                       canvasArea:''
                     });
-                    chatClient.joinRoom();
-
+                    chatClient.joinRoom(receiverSurfaceId, this.XComponentSurfaceId);
+                    // initCameraAndCreatTrack
 
                   })
             })

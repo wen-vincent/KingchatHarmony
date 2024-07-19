@@ -407,10 +407,10 @@ export class RoomClient extends EventEmitter {
   }
 
 
-  async joinRoom() {
+  async joinRoom(receiverSurfaceId,XComponentSurfaceId) {
     // 创建websockt通信,WebSocketTransport 是一种特殊处理过的websocket
     logger.debug("protooUrl: %s", this._protooUrl);
-
+    testNapi.initCameraAndCreatTrack(receiverSurfaceId,XComponentSurfaceId);
     // 无法获取连接出错误后错误原因
     if (!this._protooTransport) {
       try {
@@ -456,7 +456,7 @@ export class RoomClient extends EventEmitter {
       //初始化视频
       // 获取媒体信息
       await this._setRtpCapabilities();
-
+      // testNapi.initCameraAndCreatTrack(receiverSurfaceId,XComponentSurfaceId);
       // await this._connectMediastream();
 
       if (this._videoMode === VIDEO_MODE.SINGLE) { // 单向在这里推流

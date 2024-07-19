@@ -25,6 +25,7 @@
 #include "api/video_codecs/video_encoder_factory_template_libvpx_vp9_adapter.h"
 #include "api/video_codecs/video_encoder_factory_template_open_h264_adapter.h"
 #include "hilog/log.h"
+#include "ohos_capturer_track_source.h"
 
 using namespace mediasoupclient;
 
@@ -117,11 +118,21 @@ rtc::scoped_refptr<webrtc::VideoTrackInterface> createSquaresVideoTrack(const st
     if (!factory)
         createFactory();
 
-    std::cout << "[INFO] getting frame generator" << std::endl;
-    auto *videoTrackSource = new rtc::RefCountedObject<webrtc::FrameGeneratorCapturerVideoTrackSource>(
-        webrtc::FrameGeneratorCapturerVideoTrackSource::Config(), webrtc::Clock::GetRealTimeClock(), false);
-    videoTrackSource->Start();
-
-    std::cout << "[INFO] creating video track" << std::endl;
-    return factory->CreateVideoTrack(rtc::CreateRandomUuid(), videoTrackSource);
+//     std::cout << "[INFO] getting frame generator" << std::endl;
+//     auto *videoTrackSource = new rtc::RefCountedObject<webrtc::FrameGeneratorCapturerVideoTrackSource>(
+//         webrtc::FrameGeneratorCapturerVideoTrackSource::Config(), webrtc::Clock::GetRealTimeClock(), false);
+//     videoTrackSource->Start();
+//
+//     std::cout << "[INFO] creating video track" << std::endl;
+//     return factory->CreateVideoTrack(rtc::CreateRandomUuid(), videoTrackSource);
+    
+    
+    rtc::scoped_refptr<webrtc::ohos::CapturerTrackSource> video_device =
+      webrtc::ohos::CapturerTrackSource::Create();
+    if (video_device) {
+        rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track_(
+            factory->CreateVideoTrack(video_device, "kVideoLabel"));
+//     main_wnd_->StartLocalRenderer(video_track_.get());
+        return video_track_;
+    }
 }

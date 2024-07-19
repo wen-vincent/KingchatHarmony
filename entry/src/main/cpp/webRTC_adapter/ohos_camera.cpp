@@ -356,7 +356,7 @@ int32_t OhosCamera::SetCameraIndex(uint32_t camera_index) {
 }
 
 bool OhosCamera::ImageReceiverOn(uint8_t *buffer, int32_t width, int32_t height) {
-  OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "imageReceiverOn started");
+//   OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "imageReceiverOn started");
   height = (height > 0) ? height : -height; // abs
 
   rtc::scoped_refptr<webrtc::I420Buffer> i420_buffer = webrtc::I420Buffer::Create(width, height);
@@ -371,6 +371,7 @@ bool OhosCamera::ImageReceiverOn(uint8_t *buffer, int32_t width, int32_t height)
                                      .set_rotation(webrtc::kVideoRotation_90)
                                      .build();
   if (data_callback_) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "data_callback_");
     data_callback_->OnFrame(video_frame);
   }
   return true;
@@ -390,8 +391,8 @@ napi_value OhosCamera::GetImageData(napi_env env, ImageReceiverNative* image_rec
 
   OhosImageSize img_size;
   ret = OH_Image_Size(next_image_native, &img_size);
-  OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "OH_Image_Size  width: %{public}d, height:%{public}d",
-               img_size.width, img_size.height);
+//   OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "OH_Image_Size  width: %{public}d, height:%{public}d",
+//                img_size.width, img_size.height);
   if (ret != IMAGE_RESULT_SUCCESS) {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "OH_Image_Size failed, ret = %{public}d", ret);
     return nullptr;
