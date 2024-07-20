@@ -393,16 +393,16 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast,const 
     if (enableAudio && this->device.CanProduce("audio"))
 	{
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 开始推流 audio\n");
-//         auto audioTrack = createAudioTrack(std::to_string(rtc::CreateRandomId()));
-//
-//         /* clang-format off */
-//         json codecOptions = {
-//             { "opusStereo", true },
-//             { "opusDtx",		true }
-//         };
-//         /* clang-format on */
-//
-//         this->sendTransport->Produce(this, audioTrack.get(), nullptr, &codecOptions, nullptr);
+        auto audioTrack = createAudioTrack(std::to_string(rtc::CreateRandomId()));
+
+        /* clang-format off */
+        json codecOptions = {
+            { "opusStereo", true },
+            { "opusDtx",		true }
+        };
+        /* clang-format on */
+
+        this->sendTransport->Produce(this, audioTrack.get(), nullptr, &codecOptions, nullptr);
 	}
 	else
 	{
