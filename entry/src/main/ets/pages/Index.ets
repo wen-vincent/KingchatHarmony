@@ -6,20 +6,21 @@ import Logger from '../utils/Logger'
 import {RoomClient} from '../kingchat/roomClient';
 
 //wss://inward.szkingdom.vip/kingchat/?roomId=0099&peerId=ulfp3xury07br9xz&videoMode=2
-const chatClient = new RoomClient({
-  roomId:'0099',
-  localStream:'',
-  displayName:'',
-  mode:'2',
-  protooUrl:'wss://kingchat.szkingdom.vip/kingchat/',
-  videoContentHint:'',
-  forceAudioCodec:'',
-  audioContentHint:'',
-  canvas:'',
-  ctx:'',
-  canvasArea:''
-});
-chatClient.joinRoom();
+
+// const chatClient = new RoomClient({
+//   roomId:'0099',
+//   localStream:'',
+//   displayName:'',
+//   mode:'2',
+//   protooUrl:'wss://kingchat.szkingdom.vip/kingchat/',
+//   videoContentHint:'',
+//   forceAudioCodec:'',
+//   audioContentHint:'',
+//   canvas:'',
+//   ctx:'',
+//   canvasArea:''
+// });
+// chatClient.joinRoom();
 
 const logger = new Logger('index.ets');
 @Entry
@@ -81,19 +82,34 @@ struct Index {
                   .requestPermissionsFromUser(getContext(), ['ohos.permission.CAMERA'])
                   .then(async () => {
 
-                    // let receiverSurfaceId: string = await this.receiver.getReceivingSurfaceId();
-                    // this.XComponentSurfaceId = this.mXComponentController.getXComponentSurfaceId();
+                    let receiverSurfaceId: string = await this.receiver.getReceivingSurfaceId();
+                    this.XComponentSurfaceId = this.mXComponentController.getXComponentSurfaceId();
+                    // testNapi.initCameraAndCreatTrack(receiverSurfaceId, this.XComponentSurfaceId);
                     // testNapi.openCamera(receiverSurfaceId, this.XComponentSurfaceId);
-                    // // testNapi.changeCamera();
-                    // this.receiver.on('imageArrival', () => {
-                    //   console.log("imageArrival start");
-                    //   let img: image.Image = testNapi.createFromReceiver(this.receiver);
-                    //   if (img) {
-                    //     img.release();
-                    //   }
-                    // });
+                    // testNapi.changeCamera();
+                    this.receiver.on('imageArrival', () => {
+                      console.log("imageArrival start");
+                      let img: image.Image = testNapi.createFromReceiver(this.receiver);
+                      if (img) {
+                        img.release();
+                      }
+                    });
 
-
+                    const chatClient = new RoomClient({
+                      roomId:'0099',
+                      localStream:'',
+                      displayName:'',
+                      mode:'2',
+                      protooUrl:'wss://kingchat.szkingdom.vip/kingchat/',
+                      videoContentHint:'',
+                      forceAudioCodec:'',
+                      audioContentHint:'',
+                      canvas:'',
+                      ctx:'',
+                      canvasArea:''
+                    });
+                    chatClient.joinRoom(receiverSurfaceId, this.XComponentSurfaceId);
+                    // initCameraAndCreatTrack
 
                   })
             })

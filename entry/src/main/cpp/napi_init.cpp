@@ -25,63 +25,76 @@
 #include "json.hpp"
 // #include "httplib.h"
 #include "./utils/utilCallJs.h"
-#include <future>
+#include "api/scoped_refptr.h"
+#include "pc/video_track_source.h"
+#include "ohos_capturer_track_source.h"
+#include "ohos_camera_capture.h"
+#include "ohos_camera.h"
+#include <arm-linux-ohos/bits/alltypes.h>
+#include <multimedia/image_framework/image_mdk.h>
+#include <multimedia/image_framework/image_receiver_mdk.h>
+#include <malloc.h>
+#include "client/ohos/peer_sample.h"
 
 Broadcaster broadcaster;
 // broadcaster.Start(baseUrl, enableAudio, useSimulcast, response, verifySsl);
 
 using json = nlohmann::json;
 
-napi_threadsafe_function tsfn; // 线程安全函数
-static int g_cValue;           // 保存value最新的值,作为参数传给js回调函数
-int g_threadNum = 3;           // 线程数
+static napi_value InitCamera(napi_env env, napi_callback_info info) {
+    webrtc::ohos::OhosCamera::GetInstance().Init(env, info);
+    rtc::scoped_refptr<webrtc::ohos::CapturerTrackSource> ohos_cts = webrtc::ohos::CapturerTrackSource::Create();
 
-struct CallbackContext {
-    napi_async_work asyncWork = nullptr;
-    napi_env env = nullptr;
-    napi_ref callbackRef = nullptr;
-    int retData = 0;
-};
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "had been try create");
+    return nullptr;
+}
+static napi_value StopCamera(napi_env env, napi_callback_info info) {
+    webrtc::ohos::OhosCamera::GetInstance().StopCamera();
+    return nullptr;
+}
 
-// 安全函数回调
-static void ThreadSafeCallJs(napi_env env, napi_value js_cb, void *context, void *data) {
-    CallbackContext *argContent = (CallbackContext *)data;
-    if (argContent != nullptr) {
-        OH_LOG_INFO(LOG_APP, "ThreadSafeTest CallJs start, retData:[%{public}d]", argContent->retData);
-        napi_get_reference_value(env, argContent->callbackRef, &js_cb);
-    } else {
-        OH_LOG_INFO(LOG_APP, "ThreadSafeTest CallJs argContent is null");
-        return;
+static napi_value InitCameraAndCreatTrack(napi_env env, napi_callback_info info) {
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectPeer");
+    webrtc::ohos::OhosCamera::GetInstance().Init(env, info);
+//     rtc::scoped_refptr<webrtc::ohos::CapturerTrackSource> ohos_cts = webrtc::ohos::CapturerTrackSource::Create();
+    
+    uint32_t camera_index = webrtc::ohos::OhosCamera::GetInstance().GetCameraIndex();
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectPeer %{public}d",camera_index);
+    camera_index = camera_index <= 1 ? 1 - camera_index : 0 ;
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectPeer %{public}d",camera_index);
+    webrtc::ohos::OhosCamera::GetInstance().SetCameraIndex(camera_index);
+    webrtc::ohos::OhosCamera::GetInstance().InitCamera();
+    webrtc::ohos::OhosCamera::GetInstance().SetCameraIndex(camera_index);
+    webrtc::ohos::OhosCamera::GetInstance().StartCamera();
+//     if (!GetPeerConnect()) {
+//         PeerSamplePostEvent(PEER_EVENT_CONNECT_PEER);
+//     }
+
+    napi_value result;
+    napi_create_int32(env, 0, &result);
+    return result;
+}
+
+static napi_value CreateFromReceiver(napi_env env, napi_callback_info info) {
+    size_t argc = 1;
+    napi_value args[1] = {nullptr};
+    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+    napi_valuetype value_type;
+    napi_typeof(env, args[0], &value_type);
+    napi_ref reference;
+    napi_create_reference(env, args[0], 1, &reference);
+    napi_value img_receiver_js;
+    napi_get_reference_value(env, reference, &img_receiver_js);
+
+    ImageReceiverNative *img_receiver_c = OH_Image_Receiver_InitImageReceiverNative(env, img_receiver_js);
+    napi_value next_image = webrtc::ohos::OhosCamera::GetInstance().GetImageData(env, img_receiver_c);
+
+    int32_t ret = OH_Image_Receiver_Release(img_receiver_c);
+    if (ret != 0) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "OH_Image_Receiver_Release failed");
+        return nullptr;
     }
-
-    napi_valuetype valueType = napi_undefined;
-    napi_typeof(env, js_cb, &valueType);
-    if (valueType != napi_valuetype::napi_function) {
-        OH_LOG_ERROR(LOG_APP, "ThreadSafeTest callback param is not function");
-        if (argContent != nullptr) {
-            napi_delete_reference(env, argContent->callbackRef);
-            delete argContent;
-            argContent = nullptr;
-            OH_LOG_INFO(LOG_APP, "ThreadSafeTest delete argContent");
-        }
-        return;
-    }
-    // 将当前value值作为参数调用js函数
-    napi_value argv;
-    napi_create_int32(env, g_cValue, &argv);
-    napi_value result = nullptr;
-    napi_call_function(env, nullptr, js_cb, 1, &argv, &result);
-    // g_cValue保存调用js后的返回结果
-    napi_get_value_int32(env, result, &g_cValue);
-    OH_LOG_INFO(LOG_APP, "ThreadSafeTest CallJs end, [%{public}d]", g_cValue);
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "ThreadSafeTest CallJs end, [%{public}d]", g_cValue);
-
-    if (argContent != nullptr) {
-        napi_delete_reference(env, argContent->callbackRef);
-        delete argContent;
-        argContent = nullptr;
-        OH_LOG_INFO(LOG_APP, "ThreadSafeTest delete argContent end");
-    }
+    return next_image;
 }
 
 static napi_value InitMediasoup(napi_env env, napi_callback_info info) {
@@ -188,6 +201,8 @@ static napi_value Init(napi_env env, napi_value exports) {
         {"getMediasoupDevice", nullptr, GetMediasoupDevice, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"initMediasoup", nullptr, InitMediasoup, nullptr, nullptr, nullptr, napi_default, callbackData},
         {"connectMediastream", nullptr, ConnectMediastream, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"initCameraAndCreatTrack", nullptr, InitCameraAndCreatTrack, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"createFromReceiver", nullptr, CreateFromReceiver, nullptr, nullptr, nullptr, napi_default, nullptr},
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;

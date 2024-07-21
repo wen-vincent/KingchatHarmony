@@ -20,3 +20,4 @@ export const getMediasoupDevice: (a:String) => string;
 export const initMediasoup: (cb:(a:string)=>Promise<string>) => number;
 // export co initMediasoup: (cb:()=>Promise<string>) => Promise<number>;
 export const connectMediastream: (a:String) => Number;
+export const initCameraAndCreatTrack: (a: string, b: String) => void;

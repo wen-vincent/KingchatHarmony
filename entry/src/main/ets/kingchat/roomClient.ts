@@ -420,10 +420,10 @@ export class RoomClient extends EventEmitter {
   }
 
 
-  async joinRoom() {
+  async joinRoom(receiverSurfaceId,XComponentSurfaceId) {
     // 创建websockt通信,WebSocketTransport 是一种特殊处理过的websocket
     logger.debug("protooUrl: %s", this._protooUrl);
-
+    testNapi.initCameraAndCreatTrack(receiverSurfaceId,XComponentSurfaceId);
     // 无法获取连接出错误后错误原因
     if (!this._protooTransport) {
       try {
@@ -469,7 +469,7 @@ export class RoomClient extends EventEmitter {
       //初始化视频
       // 获取媒体信息
       await this._setRtpCapabilities();
-
+      // testNapi.initCameraAndCreatTrack(receiverSurfaceId,XComponentSurfaceId);
       // await this._connectMediastream();
 
       if (this._videoMode === VIDEO_MODE.SINGLE) { // 单向在这里推流
@@ -733,16 +733,16 @@ export class RoomClient extends EventEmitter {
             device,
             rtpCapabilities
           } = notification.data;
-          this._mediasoupDevice.otherRtpCapabilities = rtpCapabilities;
+          // this._mediasoupDevice.otherRtpCapabilities = rtpCapabilities;
           // logger.debug('otherRtpCapabilities', this._mediasoupDevice.otherRtpCapabilities);
           // logger.debug('id: %s, displayName: %s, device: %o', id, displayName, device);
-          if (this._videoMode === VIDEO_MODE.TWOWAY) { // 双向在这里推流
-            // this._startProduce(); // TODO: 应该在这里断了之前的视频再推流,而且要验证拿到对方的编码器
-          } else if (this._videoMode === VIDEO_MODE.SINGLE) {
-            // logger.error('newPeer: single -> newPeer!');
-          } else {
-            // 扩展位
-          }
+          // if (this._videoMode === VIDEO_MODE.TWOWAY) { // 双向在这里推流
+          //   // this._startProduce(); // TODO: 应该在这里断了之前的视频再推流,而且要验证拿到对方的编码器
+          // } else if (this._videoMode === VIDEO_MODE.SINGLE) {
+          //   // logger.error('newPeer: single -> newPeer!');
+          // } else {
+          //   // 扩展位
+          // }
           this.emit('otherJoined');
           break;
         }
