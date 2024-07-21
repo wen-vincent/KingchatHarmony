@@ -105,13 +105,19 @@ rtc::scoped_refptr<webrtc::AudioTrackInterface> createAudioTrack(const std::stri
 }
 
 // Video track creation.
-rtc::scoped_refptr<webrtc::VideoTrackInterface> createVideoTrack(const std::string & /*label*/) {
+rtc::scoped_refptr<webrtc::VideoTrackInterface> createVideoTrack(const std::string & label) {
     if (!factory)
         createFactory();
 
-    auto *videoTrackSource = new rtc::RefCountedObject<webrtc::FakePeriodicVideoTrackSource>(false /* remote */);
-
-    return factory->CreateVideoTrack(rtc::CreateRandomUuid(), videoTrackSource);
+//     auto *videoTrackSource = new rtc::RefCountedObject<webrtc::FakePeriodicVideoTrackSource>(false /* remote */);
+//
+//     return factory->CreateVideoTrack(rtc::CreateRandomUuid(), videoTrackSource);
+    
+      rtc::scoped_refptr<webrtc::ohos::CapturerTrackSource> video_device = webrtc::ohos::CapturerTrackSource::Create();
+//   if (video_device) {
+//     rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track_(factory->CreateVideoTrack(video_device, label));
+//     main_wnd_->StartLocalRenderer(video_track_.get());
+        return factory->CreateVideoTrack(video_device, label);
 }
 
 rtc::scoped_refptr<webrtc::VideoTrackInterface> createSquaresVideoTrack(const std::string & /*label*/) {
