@@ -449,23 +449,23 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast,const 
 
 	///////////////////////// Create Data Producer //////////////////////////
 
-// 	this->dataProducer = sendTransport->ProduceData(this);
-//
-// 	uint32_t intervalSeconds = 10;
-// 	std::thread([this, intervalSeconds]() {
-// 		bool run = true;
-// 		while (run)
-// 		{
-// 			std::chrono::system_clock::time_point p = std::chrono::system_clock::now();
-// 			std::time_t t                           = std::chrono::system_clock::to_time_t(p);
-// 			std::string s                           = std::ctime(&t);
-// 			auto dataBuffer                         = webrtc::DataBuffer(s);
-// 			std::cout << "[INFO] sending chat data: " << s << std::endl;
-// 			this->dataProducer->Send(dataBuffer);
-// 			run = timerKiller.WaitFor(std::chrono::seconds(intervalSeconds));
-// 		}
-// 	})
-// 	  .detach();
+	this->dataProducer = sendTransport->ProduceData(this);
+
+	uint32_t intervalSeconds = 10;
+	std::thread([this, intervalSeconds]() {
+		bool run = true;
+		while (run)
+		{
+			std::chrono::system_clock::time_point p = std::chrono::system_clock::now();
+			std::time_t t                           = std::chrono::system_clock::to_time_t(p);
+			std::string s                           = std::ctime(&t);
+			auto dataBuffer                         = webrtc::DataBuffer(s);
+			std::cout << "[INFO] sending chat data: " << s << std::endl;
+			this->dataProducer->Send(dataBuffer);
+			run = timerKiller.WaitFor(std::chrono::seconds(intervalSeconds));
+		}
+	})
+	  .detach();
 
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::CreateSendTransport over--!!!------\n");
 }
