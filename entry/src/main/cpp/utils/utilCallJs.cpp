@@ -114,6 +114,7 @@ std::future<std::string> utilCallJs::executeJs(napi_env env, bool isMainThread,s
 {
     this->callbackData->parm = parm;
     this->isCallInMainThread = isMainThread;
+    this->prom = std::promise<std::string>();
     if (isMainThread) {
         // 在主线程中，创建异步队列
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "%{public}s::在线程%{public}u中，创建异步队列\n",__func__ ,std::this_thread::get_id());

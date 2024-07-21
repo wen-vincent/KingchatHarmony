@@ -95,7 +95,7 @@ std::future<void> Broadcaster::OnConnectSendTransport(const json& dtlsParameters
 
 std::future<void> Broadcaster::OnConnectRecvTransport(const json& dtlsParameters)
 {
-	std::promise<void> promise;
+	std::promise<void> promise; 
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnectRecvTransport()\n");
 	/* clang-format off */
 // 	json body =
@@ -123,7 +123,7 @@ std::future<void> Broadcaster::OnConnectRecvTransport(const json& dtlsParameters
 //
 // 		promise.set_exception(std::make_exception_ptr(r.text));
 // 	}
-promise.set_value();
+    promise.set_value();
 	return promise.get_future();
 }
 
@@ -155,7 +155,7 @@ std::future<std::string> Broadcaster::OnProduce(
 {
 
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnProduce() %{public}u\n",std::this_thread::get_id());
-	std::promise<std::string> promise;
+// 	std::promise<std::string> promise;
 
 	// call js 
     napi_env env;
@@ -167,12 +167,12 @@ std::future<std::string> Broadcaster::OnProduce(
     std::string parmStr = parm.dump();
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::setParm() %{public}s\n",parmStr.c_str());
     std::future<std::string> fu = getProduceId->executeJs( env, false, parmStr);
-//     return fu;
+    return fu;
     std::string id = fu.get();
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::getid() %{public}s\n",id.c_str());
 //     std::this_thread::sleep_for(std::chrono::seconds(1));
-//     promise.set_value("1234567890"+kind);
-	return promise.get_future();
+//     promise.set_value(id);
+// 	return promise.get_future();
     
 //     return getProduceId->executeJs( env, true);
 }

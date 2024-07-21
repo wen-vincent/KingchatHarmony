@@ -720,16 +720,16 @@ export class RoomClient extends EventEmitter {
             device,
             rtpCapabilities
           } = notification.data;
-          this._mediasoupDevice.otherRtpCapabilities = rtpCapabilities;
+          // this._mediasoupDevice.otherRtpCapabilities = rtpCapabilities;
           // logger.debug('otherRtpCapabilities', this._mediasoupDevice.otherRtpCapabilities);
           // logger.debug('id: %s, displayName: %s, device: %o', id, displayName, device);
-          if (this._videoMode === VIDEO_MODE.TWOWAY) { // 双向在这里推流
-            // this._startProduce(); // TODO: 应该在这里断了之前的视频再推流,而且要验证拿到对方的编码器
-          } else if (this._videoMode === VIDEO_MODE.SINGLE) {
-            // logger.error('newPeer: single -> newPeer!');
-          } else {
-            // 扩展位
-          }
+          // if (this._videoMode === VIDEO_MODE.TWOWAY) { // 双向在这里推流
+          //   // this._startProduce(); // TODO: 应该在这里断了之前的视频再推流,而且要验证拿到对方的编码器
+          // } else if (this._videoMode === VIDEO_MODE.SINGLE) {
+          //   // logger.error('newPeer: single -> newPeer!');
+          // } else {
+          //   // 扩展位
+          // }
           this.emit('otherJoined');
           break;
         }
