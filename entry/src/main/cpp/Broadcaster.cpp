@@ -108,33 +108,18 @@ std::future<void> Broadcaster::OnConnectRecvTransport(const json& dtlsParameters
 	std::promise<void> promise; 
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnectRecvTransport()\n");
 	/* clang-format off */
-// 	json body =
-// 	{
-// 		{ "dtlsParameters", dtlsParameters }
-// 	};
-// 	/* clang-format on */
-//
-// 	auto r = cpr::PostAsync(
-// 	           cpr::Url{ this->baseUrl + "/broadcasters/" + this->id + "/transports/" +
-// 	                     this->recvTransport->GetId() + "/connect" },
-// 	           cpr::Body{ body.dump() },
-// 	           cpr::Header{ { "Content-Type", "application/json" } },
-// 	           cpr::VerifySsl{ verifySsl })
-// 	           .get();
-//
-// 	if (r.status_code == 200)
-// 	{
-// 		promise.set_value();
-// 	}
-// 	else
-// 	{
-// 		std::cerr << "[ERROR] unable to connect transport"
-// 		          << " [status code:" << r.status_code << ", body:\"" << r.text << "\"]" << std::endl;
-//
-// 		promise.set_exception(std::make_exception_ptr(r.text));
-// 	}
+    napi_env env;
+    json parm;
+    parm["action"] = "connectWebRtcTransport";
+    parm["id"] =this->recvTransport->GetId();
+    parm["dtlsParameters"] =dtlsParameters;
+//     parm["appData"] =appData;
+    std::string parmStr = parm.dump();
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::setParm() %{public}s\n",parmStr.c_str());
+    std::future<std::string> fu = getProduceId->executeJs( env, false, parmStr);
+    fu.get();
     promise.set_value();
-	return promise.get_future();
+    return promise.get_future();
 }
 
 /*
@@ -298,7 +283,7 @@ int Broadcaster::CreateTransport(const nlohmann::json transportInfo) {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "transportInfoaaaaaa %{public}s\n",__func__ );
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "transportInfoaaaaaa %{public}s\n",transportInfo.dump().c_str());
     this->CreateSendTransport(true, false,transportInfo);
-//     this->CreateRecvTransport(true, false,transportInfo);    
+    this->CreateRecvTransport(transportInfo);    
     return 0;
 }
 
@@ -404,16 +389,16 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast,const 
     if (enableAudio && this->device.CanProduce("audio"))
 	{
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 开始推流 audio\n");
-//         auto audioTrack = createAudioTrack(std::to_string(rtc::CreateRandomId()));
-//
-//         /* clang-format off */
-//         json codecOptions = {
-//             { "opusStereo", true },
-//             { "opusDtx",		true }
-//         };
-//         /* clang-format on */
-//
-//         this->sendTransport->Produce(this, audioTrack.get(), nullptr, &codecOptions, nullptr);
+        auto audioTrack = createAudioTrack(std::to_string(rtc::CreateRandomId()));
+
+        /* clang-format off */
+        json codecOptions = {
+            { "opusStereo", true },
+            { "opusDtx",		true }
+        };
+        /* clang-format on */
+
+        this->sendTransport->Produce(this, audioTrack.get(), nullptr, &codecOptions, nullptr);
 	}
 	else
 	{

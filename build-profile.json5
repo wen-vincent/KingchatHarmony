@@ -2,29 +2,16 @@
   "app": {
     "signingConfigs": [
       {
-        "name": "home",
-        "type": "HarmonyOS",
-        "material": {
-          "certpath": "C:\\Users\\13823\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.cer",
-          "storePassword": "0000001A923192EB8C0391DC98A0541296418C9A44AE6077ADF659D3885C65DBC5A20EBFB3C4A238CB84",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001AC13B57FEEBC8109ED85887709EE6F9C37BAF1B74D4065C8057E75C3392357A31E6BA167385AA",
-          "profile": "C:\\Users\\13823\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\13823\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p12"
-        }
-      },
-      {
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\Administrator\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.cer",
-          "storePassword": "0000001B8B324F0D9F9B64CABF381A681074BE7CA7515A0B163EE1D570509153D014F2B7774A17D58E74DA",
+          "certpath": "C:\\Users\\viper\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.cer",
+          "storePassword": "0000001B006A006004309F694E4490E7275B13DB2CFB5FD6F67CC723EDB612CAF8DC0F0BDC8376AA60F179",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B2D9190D985DD7958485A1D8AD9B50110A935BE77E8705DC25EAAF4E80059FE70A79E3B69351A47",
-          "profile": "C:\\Users\\Administrator\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p7b",
+          "keyPassword": "0000001B1B91EF992820A9CF7B12C9E59E4F3023097A1D5D3D49035F0B8DA7DBCEEF5B8F1B13B8FA848720",
+          "profile": "C:\\Users\\viper\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\Administrator\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p12"
+          "storeFile": "C:\\Users\\viper\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p12"
         }
       }
     ],
