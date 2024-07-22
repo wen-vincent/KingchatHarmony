@@ -15,3 +15,4 @@ local.properties
 *.tar.gz
 *.o
 /entry/src/main/cpp/3rd
+build-profile.json5
