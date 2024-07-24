@@ -24,35 +24,35 @@
 
 namespace webrtc {
 namespace ohos {
-class OhosCameraCapture : public rtc::VideoSourceInterface<VideoFrame>,
-                          public rtc::VideoSinkInterface<VideoFrame> {
+class OhosCameraCapture : public rtc::VideoSourceInterface<VideoFrame>, public rtc::VideoSinkInterface<VideoFrame> {
 public:
-  OhosCameraCapture();
-  ~OhosCameraCapture();
-  class FramePreprocessor {
-  public:
-    virtual ~FramePreprocessor() = default;
-    virtual VideoFrame Preprocess(const VideoFrame &frame) = 0;
-  };
-  static OhosCameraCapture *Create();
-  void AddOrUpdateSink(VideoSinkInterface<VideoFrame>* sink,const rtc::VideoSinkWants& wants) override;
-  void RemoveSink(rtc::VideoSinkInterface<VideoFrame> *sink) override;
-  void OnFrame(const VideoFrame &frame) override;
-  void SetFramePreprocessor(std::unique_ptr<FramePreprocessor> preprocessor){};
+    OhosCameraCapture();
+    ~OhosCameraCapture();
+    class FramePreprocessor {
+    public:
+        virtual ~FramePreprocessor() = default;
+        virtual VideoFrame Preprocess(const VideoFrame &frame) = 0;
+    };
+    static OhosCameraCapture *Create();
+    void AddOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const rtc::VideoSinkWants &wants) override;
+    void RemoveSink(rtc::VideoSinkInterface<VideoFrame> *sink) override;
+    void OnFrame(const VideoFrame &frame) override;
+    void SetFramePreprocessor(std::unique_ptr<FramePreprocessor> preprocessor){};
+
 private:
-  bool Init();
-  void Destroy();
-  void UpdateVideoAdapter();
-  VideoFrame MaybePreprocess(const VideoFrame &frame);
+    bool Init();
+    void Destroy();
+    void UpdateVideoAdapter();
+    VideoFrame MaybePreprocess(const VideoFrame &frame);
 
-  Mutex lock_;
-  rtc::VideoBroadcaster broadcaster_;
-  cricket::VideoAdapter video_adapter_;
-  bool enable_adaptation_ RTC_GUARDED_BY(lock_) = false;
-  std::unique_ptr<FramePreprocessor> preprocessor_ RTC_GUARDED_BY(lock_);
+    Mutex lock_;
+    rtc::VideoBroadcaster broadcaster_;
+    cricket::VideoAdapter video_adapter_;
+    bool enable_adaptation_ RTC_GUARDED_BY(lock_) = false;
+    std::unique_ptr<FramePreprocessor> preprocessor_ RTC_GUARDED_BY(lock_);
 };
-}
-}
+} // namespace ohos
+} // namespace webrtc
 
 
-#endif //OH_WEB_RTC_OHOS_CAMERA_CAPTURE_H
+#endif // OH_WEB_RTC_OHOS_CAMERA_CAPTURE_H

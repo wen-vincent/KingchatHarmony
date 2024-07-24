@@ -96,11 +96,11 @@ rtc::scoped_refptr<webrtc::AudioTrackInterface> createAudioTrack(const std::stri
     if (!factory)
         createFactory();
 
-//     cricket::AudioOptions options;
-//     options.highpass_filter = false;
-//     rtc::scoped_refptr<webrtc::AudioSourceInterface> source = factory->CreateAudioSource(options);
+    cricket::AudioOptions options;
+    options.highpass_filter = false;
+    rtc::scoped_refptr<webrtc::AudioSourceInterface> source = factory->CreateAudioSource(options);
     // oh_webrtc
- rtc::scoped_refptr<webrtc::AudioSourceInterface> source = factory->CreateAudioSource(cricket::AudioOptions());
+//  rtc::scoped_refptr<webrtc::AudioSourceInterface> source = factory->CreateAudioSource(cricket::AudioOptions());
     return factory->CreateAudioTrack(label, source.get());
 }
 

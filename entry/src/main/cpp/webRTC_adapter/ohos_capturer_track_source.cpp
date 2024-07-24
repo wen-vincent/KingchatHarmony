@@ -11,14 +11,12 @@ namespace webrtc {
 namespace ohos {
 
 rtc::scoped_refptr<CapturerTrackSource> CapturerTrackSource::Create() {
-  std::unique_ptr<OhosCameraCapture> capturer(OhosCameraCapture::Create());
-  return rtc::make_ref_counted<CapturerTrackSource>(std::move(capturer));
+    std::unique_ptr<OhosCameraCapture> capturer(OhosCameraCapture::Create());
+    return rtc::make_ref_counted<CapturerTrackSource>(std::move(capturer));
 }
 
 CapturerTrackSource::~CapturerTrackSource() {}
 
-rtc::VideoSourceInterface<webrtc::VideoFrame> *CapturerTrackSource::source() { 
-  return capturer_.get();
-}
+rtc::VideoSourceInterface<webrtc::VideoFrame> *CapturerTrackSource::source() { return capturer_.get(); }
 } // namespace ohos
 } // namespace webrtc

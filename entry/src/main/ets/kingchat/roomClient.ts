@@ -1,12 +1,18 @@
 import Logger from '../utils/Logger'
-import {generateRandomString,generateRandomNumber, deviceInfo } from '../utils/Utils'
+import { generateRandomString, generateRandomNumber, deviceInfo } from '../utils/Utils'
 import WebSocketTransport from '../protooClient/transports/WebSocketTransport'
 import Peer from '../protooClient/Peer'
 import { EventEmitter } from '../polyfill/events';
-import { PC_PROPRIETARY_CONSTRAINTS, TRANSPORT_DIRECTION, VIDEO_MODE, MEDIA_SEND_STATE, MEDIA_IDENTITY } from '../utils/define';
+import {
+  PC_PROPRIETARY_CONSTRAINTS,
+  TRANSPORT_DIRECTION,
+  VIDEO_MODE,
+  MEDIA_SEND_STATE,
+  MEDIA_IDENTITY
+} from '../utils/define';
 import testNapi from 'libentry.so';
 
-const  logger = new Logger('RoomClient');
+const logger = new Logger('RoomClient');
 const uri = 'wss://inward.szkingdom.vip/kingchat/?roomId=zvu77sru&peerId=afuztkimrcojm6xy&videoMode=1';
 // const ws = new WebSocketTransport(uri,'protoo');
 
@@ -16,7 +22,7 @@ const uri = 'wss://inward.szkingdom.vip/kingchat/?roomId=zvu77sru&peerId=afuztki
 //   const routerRtpCapabilities = await peer.request('getRouterRtpCapabilities');
 //   logger.warn(JSON.stringify(routerRtpCapabilities));
 // });
-interface RoomInfo{
+interface RoomInfo {
   roomId,
   localStream,
   displayName,
@@ -34,7 +40,7 @@ export class RoomClient extends EventEmitter {
   private _device;
   private _peerId;
   private _closed;
-  private _roomId:String = '';
+  private _roomId: String = '';
   private _displayName;
   private _videoMode;
   private _produced;
@@ -91,25 +97,26 @@ export class RoomClient extends EventEmitter {
   private _stopRecord;
   private _recordMixedStream;
   public emit;
+
   constructor({
-                roomId,
-                localStream,
-                displayName,
-                mode,
-                protooUrl,
-                videoContentHint,
-                forceAudioCodec,
-                audioContentHint,
-                canvas,
-                ctx,
-                canvasArea
-              }:RoomInfo) {
+    roomId,
+    localStream,
+    displayName,
+    mode,
+    protooUrl,
+    videoContentHint,
+    forceAudioCodec,
+    audioContentHint,
+    canvas,
+    ctx,
+    canvasArea
+  }: RoomInfo) {
     super();
     // 设备标识标识
     this._device = deviceInfo();
     logger.debug('this._device', JSON.stringify(this._device));
 
-    const peerId = generateRandomString({length:16});
+    const peerId = generateRandomString({ length: 16 });
     this._peerId = peerId;
 
     // Closed flag.
@@ -118,11 +125,11 @@ export class RoomClient extends EventEmitter {
 
     // Room num
     // @type {String}
-    this._roomId = roomId ? roomId :generateRandomString({length:8});
+    this._roomId = roomId ? roomId : generateRandomString({ length: 8 });
 
     // Display name.
     // @type {String}
-    this._displayName = displayName ? displayName : generateRandomString({length:8});
+    this._displayName = displayName ? displayName : generateRandomString({ length: 8 });
 
     // video mode
     // @type {VIDEO_MODE}
@@ -193,7 +200,7 @@ export class RoomClient extends EventEmitter {
       protooUrl += '/';
     }
     this._protooUrl = protooUrl + "?roomId=" + this._roomId + "&peerId=" + peerId + "&videoMode=" + this._videoMode;
-    logger.warn('_protooUrl:',this._protooUrl);
+    logger.warn('_protooUrl:', this._protooUrl);
 
     // protoo-client Peer instance.
     // @type {protooClient.Peer}
@@ -293,7 +300,7 @@ export class RoomClient extends EventEmitter {
     // routerRtpCapabilities.codecs 服务的能力
     const routerRtpCapabilities =
       await this._protoo.request('getRouterRtpCapabilities');
-    logger.debug('getRouterRtpCapabilities',JSON.stringify(routerRtpCapabilities));
+    logger.debug('getRouterRtpCapabilities', JSON.stringify(routerRtpCapabilities));
     // {
     //   // urn:3gpp:video-orientation 字段
     //   // 会让视频自动旋转
@@ -356,29 +363,28 @@ export class RoomClient extends EventEmitter {
     //    });
     // });
 
-    let callback = (parm:string): Promise<string> => {
+    let callback = (parm: string): Promise<string> => {
 
       const jspnParm = JSON.parse(parm);
 
-      return new Promise(async (resolve,reject)=>{
+      return new Promise(async (resolve, reject) => {
         if (jspnParm.action === 'produce') {
-          logger.warn('calljs produce',jspnParm);
-          await this._protoo.request('produce',{
+          logger.warn('calljs produce', jspnParm);
+          await this._protoo.request('produce', {
             transportId: jspnParm.id,
-            kind:jspnParm.kind,
-            rtpParameters:jspnParm.rtpParameters,
-          }).then(({id})=>{
+            kind: jspnParm.kind,
+            rtpParameters: jspnParm.rtpParameters,
+          }).then(({ id }) => {
             resolve(id);
-          }).catch( error=>reject(error));
-        }
-        else if (jspnParm.action === 'connectWebRtcTransport'){
-          logger.warn('calljs connectWebRtcTransport',jspnParm);
+          }).catch(error => reject(error));
+        } else if (jspnParm.action === 'connectWebRtcTransport') {
+          logger.warn('calljs connectWebRtcTransport', jspnParm);
           await this._protoo.request('connectWebRtcTransport', {
             transportId: jspnParm.id,
             dtlsParameters: jspnParm.dtlsParameters
-          }).then(()=>{
+          }).then(() => {
             resolve("");
-          }).catch( error=>reject(error));
+          }).catch(error => reject(error));
         }
 
       });
@@ -387,23 +393,35 @@ export class RoomClient extends EventEmitter {
 
     const initInfo = testNapi.initMediasoup(callback);
 
-    if(initInfo)
-      logger.debug("初始化mediasoup成功",initInfo.toString());
+    if (initInfo) {
+      logger.debug("初始化mediasoup成功", initInfo.toString());
+    }
 
     const roomRtpCapabilities = testNapi.getMediasoupDevice(JSON.stringify(routerRtpCapabilities));
-    logger.debug('gerRtpCapabilities',JSON.stringify(roomRtpCapabilities));
+    logger.debug('gerRtpCapabilities', JSON.stringify(roomRtpCapabilities));
 
 
-    const transportInfo =
-      await this._protoo.request('createWebRtcTransport',{
+    const transportInfoProducing =
+      await this._protoo.request('createWebRtcTransport', {
         forceTcp: false,
         producing: true,
         consuming: false,
         sctpCapabilities: true
-      }).catch((err)=>{
-        logger.error('获取服务器信息失败',JSON.stringify(err));
+      }).catch((err) => {
+        logger.error('获取服务器信息失败', JSON.stringify(err));
       });
-    logger.debug('js get transportInfo: ',JSON.stringify(transportInfo));
+
+    const transportInfoConsuming =
+      await this._protoo.request('createWebRtcTransport', {
+        forceTcp: false,
+        producing: false,
+        consuming: true,
+        sctpCapabilities: true
+      }).catch((err) => {
+        logger.error('获取服务器信息失败', JSON.stringify(err));
+      });
+    let transportInfo = { transportInfoProducing, transportInfoConsuming }
+    logger.debug('js get transportInfo: ', JSON.stringify(transportInfo));
 
 
     // // wss连接
@@ -420,14 +438,14 @@ export class RoomClient extends EventEmitter {
   }
 
 
-  async joinRoom(receiverSurfaceId,XComponentSurfaceId) {
+  async joinRoom(receiverSurfaceId, XComponentSurfaceId) {
     // 创建websockt通信,WebSocketTransport 是一种特殊处理过的websocket
     logger.debug("protooUrl: %s", this._protooUrl);
-    testNapi.initCameraAndCreatTrack(receiverSurfaceId,XComponentSurfaceId);
+    testNapi.initCameraAndCreatTrack(receiverSurfaceId, XComponentSurfaceId);
     // 无法获取连接出错误后错误原因
     if (!this._protooTransport) {
       try {
-        this._protooTransport = new WebSocketTransport(this._protooUrl,'protoo');
+        this._protooTransport = new WebSocketTransport(this._protooUrl, 'protoo');
         this._protooTransport.on('open', () => {
           logger.debug('创建WebSocketTransport成功!');
         });
@@ -455,8 +473,7 @@ export class RoomClient extends EventEmitter {
         logger.error('_protooTransport', error);
         this.emit('error', error);
       }
-    }
-    else {
+    } else {
       logger.warn('protooTransport 已经创建!')
     }
 
@@ -536,71 +553,71 @@ export class RoomClient extends EventEmitter {
       switch (request.method) {
         case 'newConsumer': {
 
-          if (!this._consume) {
-            reject(403, 'I do not want to consume');
-            break;
-          }
+          testNapi.createConsume(JSON.stringify(request.data));
+          // TODO: 单向视频不需要拉流
+          // if (!this._consume) {
+          //   reject(403, 'I do not want to consume');
+          //   break;
+          // }
 
-          const {
-            peerId,
-            producerId,
-            id,
-            kind,
-            rtpParameters,
-            appData,
-          } = request.data;
+          // const {
+          //   peerId,
+          //   producerId,
+          //   id,
+          //   kind,
+          //   rtpParameters,
+          //   appData,
+          // } = request.data;
 
-          try {
-            const consumer = await this._recvTransport.consume({
-              id,
-              producerId,
-              kind,
-              rtpParameters,
-              appData: {
-                ...appData,
-                peerId
-              }
-            });
+          // try {
+          //   const consumer = await this._recvTransport.consume({
+          //     id,
+          //     producerId,
+          //     kind,
+          //     rtpParameters,
+          //     appData: {
+          //       ...appData,
+          //       peerId
+          //     }
+          //   });
 
-            this._consumers.set(consumer.id, consumer);
-            consumer.track.deviceInfo = consumer.appData.deviceInfo;
+          // this._consumers.set(consumer.id, consumer);
+          // consumer.track.deviceInfo = consumer.appData.deviceInfo;
+          // logger.warn("获得新的track,consumerId:%o,appData:%o", consumer.id, appData);
+          // if (!appData) {
+          //   if (!this._remoteStream) this._remoteStream = new MediaStream();
+          //   this._remoteStream.addTrack(consumer.track);
+          //   this.emit('getRemoteStream', kind, this._remoteStream);
+          // }
+          // else if (appData.shareDesktop) {
+          //   this.shareDesktopWidth = appData.shareDesktopWidth;
+          //   this.shareDesktopHeight = appData.shareDesktopHeight
+          //   if (!this._shareDesktopStream) this._shareDesktopStream = new MediaStream();
+          //   this._shareDesktopStream.addTrack(consumer.track);
+          //   this.emit('getShareDesktopStream', kind, this._shareDesktopStream);
+          // }
+          // else {
+          //   if (!this._remoteStream) this._remoteStream = new MediaStream();
+          //   this._remoteStream.addTrack(consumer.track);
+          //   this.emit('getRemoteStream', kind, this._remoteStream);
+          // }
+          // this.emit('getRemoteStream', kind, consumer.track);
 
+          // consumer.on('transportclose', () => {
+          //   this._consumers.delete(consumer.id);
+          // });
 
-            logger.warn("获得新的track,consumerId:%o,appData:%o", consumer.id, appData);
-            // if (!appData) {
-            //   if (!this._remoteStream) this._remoteStream = new MediaStream();
-            //   this._remoteStream.addTrack(consumer.track);
-            //   this.emit('getRemoteStream', kind, this._remoteStream);
-            // }
-            // else if (appData.shareDesktop) {
-            //   this.shareDesktopWidth = appData.shareDesktopWidth;
-            //   this.shareDesktopHeight = appData.shareDesktopHeight
-            //   if (!this._shareDesktopStream) this._shareDesktopStream = new MediaStream();
-            //   this._shareDesktopStream.addTrack(consumer.track);
-            //   this.emit('getShareDesktopStream', kind, this._shareDesktopStream);
-            // }
-            // else {
-            //   if (!this._remoteStream) this._remoteStream = new MediaStream();
-            //   this._remoteStream.addTrack(consumer.track);
-            //   this.emit('getRemoteStream', kind, this._remoteStream);
-            // }
-            // this.emit('getRemoteStream', kind, consumer.track);
+          // We are ready. Answer the protoo request so the server will
+          // resume this Consumer (which was paused for now if video).
+          accept();
 
-            consumer.on('transportclose', () => {
-              this._consumers.delete(consumer.id);
-            });
-
-            // We are ready. Answer the protoo request so the server will
-            // resume this Consumer (which was paused for now if video).
-            accept();
-
-            // If audio-only mode is enabled, pause it.
-            // if (consumer.kind === 'video')
-            // 	this._pauseConsumer(consumer);
-          } catch (error) {
-            logger.error('newConsumer', error);
-            this.emit('error', '获取对方视频流错误!');
-          }
+          // If audio-only mode is enabled, pause it.
+          // if (consumer.kind === 'video')
+          // 	this._pauseConsumer(consumer);
+          // } catch (error) {
+          //   logger.error('newConsumer', error);
+          //   this.emit('error', '获取对方视频流错误!');
+          // }
 
           break;
         }
@@ -786,12 +803,14 @@ export class RoomClient extends EventEmitter {
 
           const consumer = this._consumers.get(consumerId);
 
-          if (!consumer)
+          if (!consumer) {
             break;
+          }
 
           this._remoteStream.removeTrack(consumer.track);
-          if (this._shareDesktopStream)
+          if (this._shareDesktopStream) {
             this._shareDesktopStream.removeTrack(consumer.track);
+          }
           consumer.close();
           this._consumers.delete(consumerId);
           const {
@@ -807,8 +826,9 @@ export class RoomClient extends EventEmitter {
           } = notification.data;
           const consumer = this._consumers.get(consumerId);
 
-          if (!consumer)
+          if (!consumer) {
             break;
+          }
 
           consumer.pause();
 
@@ -821,8 +841,9 @@ export class RoomClient extends EventEmitter {
           } = notification.data;
           const consumer = this._consumers.get(consumerId);
 
-          if (!consumer)
+          if (!consumer) {
             break;
+          }
 
           consumer.resume();
 
@@ -837,8 +858,9 @@ export class RoomClient extends EventEmitter {
           } = notification.data;
           const consumer = this._consumers.get(consumerId);
 
-          if (!consumer)
+          if (!consumer) {
             break;
+          }
           break;
         }
 
@@ -857,8 +879,9 @@ export class RoomClient extends EventEmitter {
           } = notification.data;
           const dataConsumer = this._dataConsumers.get(dataConsumerId);
 
-          if (!dataConsumer)
+          if (!dataConsumer) {
             break;
+          }
 
           dataConsumer.close();
           this._dataConsumers.delete(dataConsumerId);

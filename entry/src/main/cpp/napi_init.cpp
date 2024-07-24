@@ -56,19 +56,19 @@ static napi_value StopCamera(napi_env env, napi_callback_info info) {
 static napi_value InitCameraAndCreatTrack(napi_env env, napi_callback_info info) {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectPeer");
     webrtc::ohos::OhosCamera::GetInstance().Init(env, info);
-//     rtc::scoped_refptr<webrtc::ohos::CapturerTrackSource> ohos_cts = webrtc::ohos::CapturerTrackSource::Create();
-    
+    //     rtc::scoped_refptr<webrtc::ohos::CapturerTrackSource> ohos_cts = webrtc::ohos::CapturerTrackSource::Create();
+
     uint32_t camera_index = webrtc::ohos::OhosCamera::GetInstance().GetCameraIndex();
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectPeer %{public}d",camera_index);
-    camera_index = camera_index <= 1 ? 1 - camera_index : 0 ;
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectPeer %{public}d",camera_index);
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectPeer %{public}d", camera_index);
+    camera_index = camera_index <= 1 ? 1 - camera_index : 0;
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "PeerClientConnectPeer %{public}d", camera_index);
     webrtc::ohos::OhosCamera::GetInstance().SetCameraIndex(camera_index);
     webrtc::ohos::OhosCamera::GetInstance().InitCamera();
     webrtc::ohos::OhosCamera::GetInstance().SetCameraIndex(camera_index);
     webrtc::ohos::OhosCamera::GetInstance().StartCamera();
-//     if (!GetPeerConnect()) {
-//         PeerSamplePostEvent(PEER_EVENT_CONNECT_PEER);
-//     }
+    //     if (!GetPeerConnect()) {
+    //         PeerSamplePostEvent(PEER_EVENT_CONNECT_PEER);
+    //     }
 
     napi_value result;
     napi_create_int32(env, 0, &result);
@@ -97,6 +97,29 @@ static napi_value CreateFromReceiver(napi_env env, napi_callback_info info) {
     return next_image;
 }
 
+static napi_value CreateConsume(napi_env env, napi_callback_info info) {
+
+    // 获取参数
+    size_t argc = 1;
+    napi_value args[1] = {nullptr};
+    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+
+    size_t result1;
+    napi_get_value_string_utf8(env, args[0], nullptr, 0, &result1);
+    if (result1 == 0) {
+        return nullptr;
+    }
+    char *test = new char[result1 + 1];
+    napi_get_value_string_utf8(env, args[0], test, result1 + 1, &result1);
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "CreateConsume %{public}s\n", test);
+
+    auto consumeInfo = nlohmann::json::parse(test);
+
+    //     broadcaster.Start(true, false, routerRtpCapabilities);
+    
+    return nullptr;
+}
+
 static napi_value InitMediasoup(napi_env env, napi_callback_info info) {
     auto logLevel = mediasoupclient::Logger::LogLevel::LOG_DEBUG;
     mediasoupclient::Logger::SetLogLevel(logLevel);
@@ -105,8 +128,8 @@ static napi_value InitMediasoup(napi_env env, napi_callback_info info) {
     // Initilize mediasoupclient.
     mediasoupclient::Initialize();
     napi_value result;
-    
-    utilCallJs* calljs = new utilCallJs;
+
+    utilCallJs *calljs = new utilCallJs;
     calljs->loadJs(env, info);
     broadcaster.getProduceId = calljs;
 
@@ -161,14 +184,15 @@ static napi_value GetMediasoupDevice(napi_env env, napi_callback_info info) {
     auto routerRtpCapabilities = nlohmann::json::parse(test);
 
     broadcaster.Start(true, false, routerRtpCapabilities);
-    
+
     napi_value result;
     napi_create_string_utf8(env, "test", NAPI_AUTO_LENGTH, &result);
     return result;
 }
 
 static napi_value ConnectMediastream(napi_env env, napi_callback_info info) {
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice %{public}u\n",std::this_thread::get_id());
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "GetMediasoupDevice %{public}u\n",
+                 std::this_thread::get_id());
 
     // 获取参数
     size_t argc = 1;
@@ -184,10 +208,10 @@ static napi_value ConnectMediastream(napi_env env, napi_callback_info info) {
     napi_get_value_string_utf8(env, args[0], test, result1 + 1, &result1);
 
     nlohmann::json routerRtpCapabilities = nlohmann::json::parse(test);
-//     int res = broadcaster.CreateTransport(routerRtpCapabilities);
+    //     int res = broadcaster.CreateTransport(routerRtpCapabilities);
 
-    
-    std::thread t(&Broadcaster::CreateTransport,std::ref(broadcaster),routerRtpCapabilities);
+
+    std::thread t(&Broadcaster::CreateTransport, std::ref(broadcaster), routerRtpCapabilities);
     t.detach();
     napi_value result;
     napi_create_int64(env, 1, &result);
@@ -203,7 +227,7 @@ static napi_value Init(napi_env env, napi_value exports) {
         {"connectMediastream", nullptr, ConnectMediastream, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"initCameraAndCreatTrack", nullptr, InitCameraAndCreatTrack, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"createFromReceiver", nullptr, CreateFromReceiver, nullptr, nullptr, nullptr, napi_default, nullptr},
-    };
+        {"createConsume", nullptr, CreateConsume, nullptr, nullptr, nullptr, napi_default, nullptr}};
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;
 }
