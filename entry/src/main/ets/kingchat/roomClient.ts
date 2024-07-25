@@ -553,7 +553,9 @@ export class RoomClient extends EventEmitter {
       switch (request.method) {
         case 'newConsumer': {
 
+          logger.debug("js createConsume", "start");
           testNapi.createConsume(JSON.stringify(request.data));
+          logger.debug("js createConsume", "stop");
           // TODO: 单向视频不需要拉流
           // if (!this._consume) {
           //   reject(403, 'I do not want to consume');

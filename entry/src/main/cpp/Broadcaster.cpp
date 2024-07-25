@@ -19,7 +19,11 @@ using json = nlohmann::json;
 Broadcaster::~Broadcaster() { this->Stop(); }
 
 void Broadcaster::OnTransportClose(mediasoupclient::Producer * /*producer*/) {
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnTransportClose()\n");
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnTransportClose() Producer\n");
+}
+
+void Broadcaster::OnTransportClose(mediasoupclient::Consumer *consumer) {
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnTransportClose() Consumer\n");
 }
 
 void Broadcaster::OnTransportClose(mediasoupclient::DataProducer * /*dataProducer*/) {
@@ -32,18 +36,18 @@ void Broadcaster::OnTransportClose(mediasoupclient::DataProducer * /*dataProduce
  * Update the already created remote transport with the local DTLS parameters.
  */
 std::future<void> Broadcaster::OnConnect(mediasoupclient::Transport *transport, const json &dtlsParameters) {
-    // std::cout << "[INFO] dtlsParameters: " << dtlsParameters.dump(4) << std::endl;
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnect()\n");
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnect() %{public}s\n",transport->GetId().c_str());
 
     if (transport->GetId() == this->sendTransport->GetId()) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnectSendTransport()\n");
         return this->OnConnectSendTransport(dtlsParameters);
     } else if (transport->GetId() == this->recvTransport->GetId()) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnectRecvTransport()\n");
         return this->OnConnectRecvTransport(dtlsParameters);
     } else {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::make_exception_ptr()\n");
         std::promise<void> promise;
-
         promise.set_exception(std::make_exception_ptr("Unknown transport requested to connect"));
-
         return promise.get_future();
     }
 }
@@ -51,60 +55,35 @@ std::future<void> Broadcaster::OnConnect(mediasoupclient::Transport *transport, 
 std::future<void> Broadcaster::OnConnectSendTransport(const json &dtlsParameters) {
     std::promise<void> promise;
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnectSendTransport()\n");
-    /* clang-format off */
-// 	json body =
-// 	{
-// 		{ "dtlsParameters", dtlsParameters }
-// 	};
-// 	/* clang-format on */
-//
-// 	auto r = cpr::PostAsync(
-// 	           cpr::Url{ this->baseUrl + "/broadcasters/" + this->id + "/transports/" +
-// 	                     this->sendTransport->GetId() + "/connect" },
-// 	           cpr::Body{ body.dump() },
-// 	           cpr::Header{ { "Content-Type", "application/json" } },
-// 	           cpr::VerifySsl{ verifySsl })
-// 	           .get();
-//
-// 	if (r.status_code == 200)
-// 	{
-// 		promise.set_value();
-// 	}
-// 	else
-// 	{
-// 		std::cerr << "[ERROR] unable to connect transport"
-// 		          << " [status code:" << r.status_code << ", body:\"" << r.text << "\"]" << std::endl;
-//
-// 		promise.set_exception(std::make_exception_ptr(r.text));
-// 	}
+
     napi_env env;
     json parm;
     parm["action"] = "connectWebRtcTransport";
-    parm["id"] =this->sendTransport->GetId();
-    parm["dtlsParameters"] =dtlsParameters;
-//     parm["appData"] =appData;
+    parm["id"] = this->sendTransport->GetId();
+    parm["dtlsParameters"] = dtlsParameters;
+    //     parm["appData"] =appData;
     std::string parmStr = parm.dump();
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::setParm() %{public}s\n",parmStr.c_str());
-    std::future<std::string> fu = getProduceId->executeJs( env, false, parmStr);
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::setParm() %{public}s\n",
+                 parmStr.c_str());
+    std::future<std::string> fu = getProduceId->executeJs(env, false, parmStr);
     fu.get();
     promise.set_value();
     return promise.get_future();
 }
 
-std::future<void> Broadcaster::OnConnectRecvTransport(const json& dtlsParameters)
-{
-	std::promise<void> promise; 
+std::future<void> Broadcaster::OnConnectRecvTransport(const json &dtlsParameters) {
+    std::promise<void> promise;
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnectRecvTransport()\n");
-	/* clang-format off */
     napi_env env;
     json parm;
     parm["action"] = "connectWebRtcTransport";
-    parm["id"] =this->recvTransport->GetId();
-    parm["dtlsParameters"] =dtlsParameters;
-//     parm["appData"] =appData;
+    parm["id"] = this->recvTransport->GetId();
+    parm["dtlsParameters"] = dtlsParameters;
+    //     parm["appData"] =appData;
     std::string parmStr = parm.dump();
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::setParm() %{public}s\n",parmStr.c_str());
-    std::future<std::string> fu = getProduceId->executeJs( env, false, parmStr);
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::setParm() %{public}s\n",
+                 parmStr.c_str());
+    std::future<std::string> fu = getProduceId->executeJs(env, false, parmStr);
     fu.get();
     promise.set_value();
     return promise.get_future();
@@ -113,16 +92,14 @@ std::future<void> Broadcaster::OnConnectRecvTransport(const json& dtlsParameters
 /*
  * Transport::Listener::OnConnectionStateChange.
  */
-void Broadcaster::OnConnectionStateChange(
-  mediasoupclient::Transport* /*transport*/, const std::string& connectionState)
-{
-	OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnectionStateChange()\n");
+void Broadcaster::OnConnectionStateChange(mediasoupclient::Transport * /*transport*/,
+                                          const std::string &connectionState) {
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnectionStateChange()\n");
 
-	if (connectionState == "failed")
-	{
-		Stop();
-		std::exit(0);
-	}
+    if (connectionState == "failed") {
+        Stop();
+        std::exit(0);
+    }
 }
 
 /* Producer::Listener::OnProduce
@@ -130,35 +107,33 @@ void Broadcaster::OnConnectionStateChange(
  * Fired when a producer needs to be created in mediasoup.
  * Retrieve the remote producer ID and feed the caller with it.
  */
-std::future<std::string> Broadcaster::OnProduce(
-  mediasoupclient::SendTransport* /*transport*/,
-  const std::string& kind,
-  json rtpParameters,
-  const json& /*appData*/)
-{
+std::future<std::string> Broadcaster::OnProduce(mediasoupclient::SendTransport * /*transport*/, const std::string &kind,
+                                                json rtpParameters, const json & /*appData*/) {
 
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnProduce() %{public}u\n",std::this_thread::get_id());
-// 	std::promise<std::string> promise;
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnProduce() %{public}u\n",
+                 std::this_thread::get_id());
+    // 	std::promise<std::string> promise;
 
-	// call js 
+    // call js
     napi_env env;
     json parm;
     parm["action"] = "produce";
-    parm["id"] =this->sendTransport->GetId();
-    parm["kind"] =kind;
-    parm["rtpParameters"] =rtpParameters;
-//     parm["appData"] =appData;
+    parm["id"] = this->sendTransport->GetId();
+    parm["kind"] = kind;
+    parm["rtpParameters"] = rtpParameters;
+    //     parm["appData"] =appData;
     std::string parmStr = parm.dump();
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::setParm() %{public}s\n",parmStr.c_str());
-    std::future<std::string> fu = getProduceId->executeJs( env, false, parmStr);
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::setParm() %{public}s\n",
+                 parmStr.c_str());
+    std::future<std::string> fu = getProduceId->executeJs(env, false, parmStr);
     return fu;
     std::string id = fu.get();
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::getid() %{public}s\n",id.c_str());
-//     std::this_thread::sleep_for(std::chrono::seconds(1));
-//     promise.set_value(id);
-// 	return promise.get_future();
-    
-//     return getProduceId->executeJs( env, true);
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::getid() %{public}s\n", id.c_str());
+    //     std::this_thread::sleep_for(std::chrono::seconds(1));
+    //     promise.set_value(id);
+    // 	return promise.get_future();
+
+    //     return getProduceId->executeJs( env, true);
 }
 
 /* Producer::Listener::OnProduceData
@@ -166,18 +141,14 @@ std::future<std::string> Broadcaster::OnProduce(
  * Fired when a data producer needs to be created in mediasoup.
  * Retrieve the remote producer ID and feed the caller with it.
  */
-std::future<std::string> Broadcaster::OnProduceData(
-  mediasoupclient::SendTransport* /*transport*/,
-  const json& sctpStreamParameters,
-  const std::string& label,
-  const std::string& protocol,
-  const json& /*appData*/)
-{
-	OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnProduceData()\n");
+std::future<std::string> Broadcaster::OnProduceData(mediasoupclient::SendTransport * /*transport*/,
+                                                    const json &sctpStreamParameters, const std::string &label,
+                                                    const std::string &protocol, const json & /*appData*/) {
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnProduceData()\n");
 
-	std::promise<std::string> promise;
+    std::promise<std::string> promise;
 
-	/* clang-format off */
+    /* clang-format off */
 // 	json body =
 //     {
 //         { "label"                , label },
@@ -268,12 +239,66 @@ const nlohmann::json& Broadcaster::Start(
 }
 
 int Broadcaster::CreateTransport(const nlohmann::json transportInfo) {
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "transportInfoaaaaaa %{public}s\n",__func__ );
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "transportInfoaaaaaa %{public}s\n",transportInfo.dump().c_str());
     this->CreateSendTransport(true, false,transportInfo);
     this->CreateRecvTransport(transportInfo);    
     return 0;
 }
+
+ int Broadcaster::createConsumer(const nlohmann::json consumeInfo){
+    auto response = consumeInfo;
+    
+    if (response.find("id") == response.end())
+    {
+        std::cerr << "[ERROR] 'id' missing in response" << std::endl;
+        return -1;
+    }
+    auto id = response["id"].get<std::string>();
+    
+    if (response.find("producerId") == response.end())
+    {
+        std::cerr << "[ERROR] 'producerId' missing in response" << std::endl;
+        return -1;
+    }
+    auto producerId = response["producerId"].get<std::string>();
+    
+    if (response.find("kind") == response.end())
+    {
+        std::cerr << "[ERROR] 'kind' missing in response" << std::endl;
+        return -1;
+    }
+    auto kind = response["kind"].get<std::string>();
+    
+    if (response.find("rtpParameters") == response.end())
+    {
+        std::cerr << "[ERROR] 'rtpParameters' missing in response" << std::endl;
+        return -1;
+    }
+    auto rtpParameters = response["rtpParameters"].get<nlohmann::json>();
+    
+    if (response.find("appData") == response.end())
+    {
+        std::cerr << "[ERROR] 'appData' missing in response" << std::endl;
+        return -1;
+    }
+    auto appData = response["appData"].get<nlohmann::json>();
+    
+    // Create client consumer.
+    
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "recvTransportGetId3 %{public}lu\n",std::this_thread::get_id());
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "recvTransportGetId %{public}s\n",this->recvTransport->GetId().c_str());
+    if (kind == "video") {
+        this->videoConsumer = this->recvTransport->Consume(this,id,producerId,kind,&rtpParameters,appData);
+        
+        auto track =  this->videoConsumer->GetTrack();
+//         track.
+    }
+    else {
+//         this->audioConsumer = this->recvTransport->Consume(this,id,producerId,kind,&rtpParameters,appData);
+    }
+    return 0;
+ }
 
 void Broadcaster::CreateDataConsumer()
 {
@@ -322,13 +347,12 @@ void Broadcaster::CreateDataConsumer()
 }
 
 void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast, const nlohmann::json &transportInfo) {
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] CreateSendTransport %{public}s\n",
-                 transportInfo.dump().c_str());
+
 
     //     json sctpCapabilities = this->device.GetSctpCapabilities();
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 11111111111\n");
     auto response = transportInfo["transportInfoProducing"];
-
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] CreateSendTransport %{public}s\n",
+                 response.dump().c_str());
     if (response.find("id") == response.end()) {
         OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, "mytest", "ERROR] 'id' missing in response\n");
         return;
@@ -350,10 +374,7 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast, const
         return;
     }
 
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 22222222\n");
-
     auto sendTransportId = response["id"].get<std::string>();
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 433333333333333333\n");
     this->sendTransport =
         this->device.CreateSendTransport(this, sendTransportId, response["iceParameters"], response["iceCandidates"],
                                          response["dtlsParameters"], response["sctpParameters"]);
@@ -370,7 +391,6 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast, const
             { "opusDtx",		true }
         };
         /* clang-format on */
-
         this->sendTransport->Produce(this, audioTrack.get(), nullptr, &codecOptions, nullptr);
     } else {
         std::cerr << "[WARN] cannot produce audio" << std::endl;
@@ -404,7 +424,7 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast, const
 
     ///////////////////////// Create Data Producer //////////////////////////
 
-    this->dataProducer = sendTransport->ProduceData(this);
+    this->dataProducer = this->sendTransport->ProduceData(this);
 
     uint32_t intervalSeconds = 10;
     std::thread([this, intervalSeconds]() {
@@ -424,44 +444,38 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast, const
 }
 
 void Broadcaster::CreateRecvTransport(const nlohmann::json &transportInfo) {
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::CreateRecvTransport -----------\n");
-    //      json sctpCapabilities = this->device.GetSctpCapabilities();
 
     auto response = transportInfo["transportInfoConsuming"];
-
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] CreateRecvTransport %{public}s\n",
+                 response.dump().c_str());
     if (response.find("id") == response.end()) {
         std::cerr << "[ERROR] 'id' missing in response" << std::endl;
-
         return;
     } else if (response.find("iceParameters") == response.end()) {
         std::cerr << "[ERROR] 'iceParameters' missing in response" << std::endl;
-
         return;
     } else if (response.find("iceCandidates") == response.end()) {
         std::cerr << "[ERROR] 'iceCandidates' missing in response" << std::endl;
-
         return;
     } else if (response.find("dtlsParameters") == response.end()) {
         std::cerr << "[ERROR] 'dtlsParameters' missing in response" << std::endl;
-
         return;
     } else if (response.find("sctpParameters") == response.end()) {
         std::cerr << "[ERROR] 'sctpParameters' missing in response" << std::endl;
-
         return;
     }
 
     auto recvTransportId = response["id"].get<std::string>();
 
-    std::cout << "[INFO] creating RecvTransport..." << std::endl;
-
-    auto sctpParameters = response["sctpParameters"];
-
     this->recvTransport =
         this->device.CreateRecvTransport(this, recvTransportId, response["iceParameters"], response["iceCandidates"],
-                                         response["dtlsParameters"], sctpParameters);
-
-    //      this->CreateDataConsumer();
+                                         response["dtlsParameters"], response["sctpParameters"]);
+    //     this->CreateDataConsumer();
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "recvTransportGetId2 %{public}lu\n",
+                 std::this_thread::get_id());
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest",
+                 "[INFO] Broadcaster::CreateRecvTransport over--!!!------ %{public}s\n",
+                 this->recvTransport->GetId().c_str());
 }
 
 void Broadcaster::OnMessage(mediasoupclient::DataConsumer *dataConsumer, const webrtc::DataBuffer &buffer) {

@@ -13,6 +13,7 @@
 class Broadcaster : public mediasoupclient::SendTransport::Listener,
                     mediasoupclient::RecvTransport::Listener,
                     mediasoupclient::Producer::Listener,
+                    mediasoupclient::Consumer::Listener,
                     mediasoupclient::DataProducer::Listener,
                     mediasoupclient::DataConsumer::Listener {
 public:
@@ -48,7 +49,7 @@ public:
     /* Virtual methods inherited from Producer::Listener. */
 public:
     void OnTransportClose(mediasoupclient::Producer *producer) override;
-
+    void OnTransportClose(mediasoupclient::Consumer *consumer) override;
     /* Virtual methods inherited from DataConsumer::Listener */
 public:
     void OnMessage(mediasoupclient::DataConsumer *dataConsumer, const webrtc::DataBuffer &buffer) override;
@@ -70,6 +71,7 @@ public:
                                 bool verifySsl = true);
     void Stop();
     int CreateTransport(const nlohmann::json transportInfo);
+    int createConsumer(const nlohmann::json consumeInfo);
     utilCallJs *getProduceId;
     utilCallJs *connectWebRtcTransport;
     ~Broadcaster();
@@ -80,6 +82,8 @@ private:
     mediasoupclient::RecvTransport *recvTransport{nullptr};
     mediasoupclient::DataProducer *dataProducer{nullptr};
     mediasoupclient::DataConsumer *dataConsumer{nullptr};
+    mediasoupclient::Consumer *videoConsumer{nullptr};
+    mediasoupclient::Consumer *audioConsumer{nullptr};
 
     std::string id = std::to_string(rtc::CreateRandomId());
     std::thread sendDataThread;

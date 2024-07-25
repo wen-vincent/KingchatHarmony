@@ -112,11 +112,12 @@ static napi_value CreateConsume(napi_env env, napi_callback_info info) {
     char *test = new char[result1 + 1];
     napi_get_value_string_utf8(env, args[0], test, result1 + 1, &result1);
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "CreateConsume %{public}s\n", test);
-
+OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "recvTransportGetId1 %{public}lu\n",std::this_thread::get_id());
     auto consumeInfo = nlohmann::json::parse(test);
+//     broadcaster.createConsumer(consumeInfo);
+    std::thread t(&Broadcaster::createConsumer, std::ref(broadcaster), consumeInfo);
+    t.detach();
 
-    //     broadcaster.Start(true, false, routerRtpCapabilities);
-    
     return nullptr;
 }
 
