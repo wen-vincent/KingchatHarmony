@@ -9,7 +9,7 @@
 #include <mutex>
 #include <string>
 #include "./utils/utilCallJs.h"
-
+#include "client/ohos/main_wnd.h"
 class Broadcaster : public mediasoupclient::SendTransport::Listener,
                     mediasoupclient::RecvTransport::Listener,
                     mediasoupclient::Producer::Listener,
@@ -98,6 +98,7 @@ private:
     void CreateSendTransport(bool enableAudio, bool useSimulcast, const nlohmann::json &transportInfo);
     void CreateRecvTransport(const nlohmann::json &transportInfo);
     void CreateDataConsumer();
+    OhosMainWnd *g_wnd = nullptr;
 };
 
 #endif // STOKER_HPP

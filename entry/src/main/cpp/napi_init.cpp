@@ -35,7 +35,8 @@
 #include <multimedia/image_framework/image_receiver_mdk.h>
 #include <malloc.h>
 #include "client/ohos/peer_sample.h"
-
+#include "samples/sample_bitmap.h"
+#include "plugin/plugin_manager.h"
 Broadcaster broadcaster;
 // broadcaster.Start(baseUrl, enableAudio, useSimulcast, response, verifySsl);
 
@@ -112,12 +113,18 @@ static napi_value CreateConsume(napi_env env, napi_callback_info info) {
     char *test = new char[result1 + 1];
     napi_get_value_string_utf8(env, args[0], test, result1 + 1, &result1);
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "CreateConsume %{public}s\n", test);
-OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "recvTransportGetId1 %{public}lu\n",std::this_thread::get_id());
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "recvTransportGetId1 %{public}lu\n",
+                 std::this_thread::get_id());
     auto consumeInfo = nlohmann::json::parse(test);
-//     broadcaster.createConsumer(consumeInfo);
+    //     broadcaster.createConsumer(consumeInfo);
     std::thread t(&Broadcaster::createConsumer, std::ref(broadcaster), consumeInfo);
     t.detach();
 
+    return nullptr;
+}
+
+static napi_value StartThread(napi_env env, napi_callback_info info) {
+    SampleBitMap::NapiDrawPattern(env, nullptr);
     return nullptr;
 }
 
@@ -222,13 +229,17 @@ static napi_value ConnectMediastream(napi_env env, napi_callback_info info) {
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports) {
     CallbackData *callbackData = new CallbackData();
+    PluginManager::GetInstance()->Export(env, exports);
+    
     napi_property_descriptor desc[] = {
         {"getMediasoupDevice", nullptr, GetMediasoupDevice, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"initMediasoup", nullptr, InitMediasoup, nullptr, nullptr, nullptr, napi_default, callbackData},
         {"connectMediastream", nullptr, ConnectMediastream, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"initCameraAndCreatTrack", nullptr, InitCameraAndCreatTrack, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"createFromReceiver", nullptr, CreateFromReceiver, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"createConsume", nullptr, CreateConsume, nullptr, nullptr, nullptr, napi_default, nullptr}};
+        {"createConsume", nullptr, CreateConsume, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"startThread", nullptr, StartThread, nullptr, nullptr, nullptr, napi_default, nullptr},
+    };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;
 }

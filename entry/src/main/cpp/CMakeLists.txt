@@ -23,13 +23,24 @@ set(CLIENT_SOURCE client/conductor.cc
                   client/ohos/peer_sample.cc
                   client/ohos/main_wnd.cc)
 
-add_library(entry SHARED napi_init.cpp Broadcaster.cpp MediaStreamTrackFactory.cpp ./utils/utilCallJs.cpp
+add_library(entry SHARED napi_init.cpp Broadcaster.cpp MediaStreamTrackFactory.cpp utils/utilCallJs.cpp samples/sample_bitmap.cpp plugin/plugin_manager.cpp
 ${WEBRTC_ADAPTER}/ohos_camera.cpp
 ${WEBRTC_ADAPTER}/ohos_codec_data.cpp
 ${WEBRTC_ADAPTER}/ohos_video_encoder.cpp
 ${WEBRTC_ADAPTER}/ohos_camera_capture.cpp
 ${WEBRTC_ADAPTER}/ohos_capturer_track_source.cpp
 ${CLIENT_SOURCE})
+
+find_library(
+    # Sets the name of the path variable.
+    hilog-lib
+    # Specifies the name of the NDK library that
+    # you want CMake to locate.
+    hilog_ndk.z
+)
+target_link_libraries(entry PUBLIC ${hilog-lib})
+target_link_libraries(entry PUBLIC libace_ndk.z.so)
+target_link_libraries(entry PUBLIC libnative_window.so libnative_drawing.so)
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libohaudio.so libohcamera.so libimage_ndk.z.so libimage_receiver_ndk.z.so libnative_image.so libnative_media_core.so libnative_media_venc.so libnative_media_codecbase.so)
 target_link_libraries(entry PUBLIC ${WEBRTC_LIB_PATH}/libmediasoupclient.a)
 target_link_libraries(entry PUBLIC ${WEBRTC_LIB_PATH}/libsdptransform.a)

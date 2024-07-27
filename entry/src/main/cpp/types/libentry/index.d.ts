@@ -38,3 +38,5 @@ export const connectMediastream: (a: String) => Number;
 export const initCameraAndCreatTrack: (a: string, b: String) => void;
 
 export const createConsume: (a: string) => void;
+
+export const startThread: (a:string) => number;

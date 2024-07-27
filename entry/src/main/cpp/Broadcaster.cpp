@@ -12,7 +12,7 @@
 #include "MediaStreamTrackFactory.h"
 #include "hilog/log.h"
 #include "utils/utilCallJs.h"
-
+#include "client/ohos/main_wnd.h"
 
 using json = nlohmann::json;
 
@@ -36,7 +36,8 @@ void Broadcaster::OnTransportClose(mediasoupclient::DataProducer * /*dataProduce
  * Update the already created remote transport with the local DTLS parameters.
  */
 std::future<void> Broadcaster::OnConnect(mediasoupclient::Transport *transport, const json &dtlsParameters) {
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnect() %{public}s\n",transport->GetId().c_str());
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnect() %{public}s\n",
+                 transport->GetId().c_str());
 
     if (transport->GetId() == this->sendTransport->GetId()) {
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::OnConnectSendTransport()\n");
@@ -148,169 +149,156 @@ std::future<std::string> Broadcaster::OnProduceData(mediasoupclient::SendTranspo
 
     std::promise<std::string> promise;
 
-    /* clang-format off */
-// 	json body =
-//     {
-//         { "label"                , label },
-//         { "protocol"             , protocol },
-//         { "sctpStreamParameters" , sctpStreamParameters }
-// 		// { "appData"				 , "someAppData" }
-// 	};
-// 	/* clang-format on */
-//
-// 	auto r = cpr::PostAsync(
-// 	           cpr::Url{ this->baseUrl + "/broadcasters/" + this->id + "/transports/" +
-// 	                     this->sendTransport->GetId() + "/produce/data" },
-// 	           cpr::Body{ body.dump() },
-// 	           cpr::Header{ { "Content-Type", "application/json" } },
-// 	           cpr::VerifySsl{ verifySsl })
-// 	           .get();
-//
-// 	if (r.status_code == 200)
-// 	{
-// 		auto response = json::parse(r.text);
-//
-// 		auto it = response.find("id");
-// 		if (it == response.end() || !it->is_string())
-// 		{
-// 			promise.set_exception(std::make_exception_ptr("'id' missing in response"));
-// 		}
-// 		else
-// 		{
-// 			auto dataProducerId = (*it).get<std::string>();
-// 			promise.set_value(dataProducerId);
-// 		}
-// 	}
-// 	else
-// 	{
-// 		std::cerr << "[ERROR] unable to create data producer"
-// 		          << " [status code:" << r.status_code << ", body:\"" << r.text << "\"]" << std::endl;
-//
-// 		promise.set_exception(std::make_exception_ptr(r.text));
-// 	}
+    // 	json body =
+    //     {
+    //         { "label"                , label },
+    //         { "protocol"             , protocol },
+    //         { "sctpStreamParameters" , sctpStreamParameters }
+    // 		// { "appData"				 , "someAppData" }
+    // 	};
+    //
+    // 	auto r = cpr::PostAsync(
+    // 	           cpr::Url{ this->baseUrl + "/broadcasters/" + this->id + "/transports/" +
+    // 	                     this->sendTransport->GetId() + "/produce/data" },
+    // 	           cpr::Body{ body.dump() },
+    // 	           cpr::Header{ { "Content-Type", "application/json" } },
+    // 	           cpr::VerifySsl{ verifySsl })
+    // 	           .get();
+    //
+    // 	if (r.status_code == 200)
+    // 	{
+    // 		auto response = json::parse(r.text);
+    //
+    // 		auto it = response.find("id");
+    // 		if (it == response.end() || !it->is_string())
+    // 		{
+    // 			promise.set_exception(std::make_exception_ptr("'id' missing in response"));
+    // 		}
+    // 		else
+    // 		{
+    // 			auto dataProducerId = (*it).get<std::string>();
+    // 			promise.set_value(dataProducerId);
+    // 		}
+    // 	}
+    // 	else
+    // 	{
+    // 		std::cerr << "[ERROR] unable to create data producer"
+    // 		          << " [status code:" << r.status_code << ", body:\"" << r.text << "\"]" << std::endl;
+    //
+    // 		promise.set_exception(std::make_exception_ptr(r.text));
+    // 	}
     promise.set_value("testOnProduceData");
-	return promise.get_future();
+    return promise.get_future();
 }
 
-const nlohmann::json& Broadcaster::Start(
-  bool enableAudio,
-  bool useSimulcast,
-  const json& routerRtpCapabilities,
-  bool verifySsl)
-{
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::Start() %{public}s\n",routerRtpCapabilities.dump().c_str());
-	this->verifySsl = verifySsl;
+const nlohmann::json &Broadcaster::Start(bool enableAudio, bool useSimulcast, const json &routerRtpCapabilities,
+                                         bool verifySsl) {
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::Start() %{public}s\n",
+                 routerRtpCapabilities.dump().c_str());
+    this->verifySsl = verifySsl;
 
-	// Load the device.
-	this->device.Load(routerRtpCapabilities);
+    // Load the device.
+    this->device.Load(routerRtpCapabilities);
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "device.Load\n");
 
-	/* clang-format off */
-// 	json body =
-// 	{
-// 		{ "id",          this->id          },
-// 		{ "displayName", "broadcaster"     },
-// 		{ "device",
-// 			{
-// 				{ "name",    "libmediasoupclient"       },
-// 				{ "version", mediasoupclient::Version() }
-// 			}
-// 		},
-// 		{ "rtpCapabilities", this->device.GetRtpCapabilities() }
-// 	};
-// 	/* clang-format on */
-//
-// 	auto r = cpr::PostAsync(
-// 	           cpr::Url{ this->baseUrl + "/broadcasters" },
-// 	           cpr::Body{ body.dump() },
-// 	           cpr::Header{ { "Content-Type", "application/json" } },
-// 	           cpr::VerifySsl{ verifySsl })
-// 	           .get();
-//
-// 	if (r.status_code != 200)
-// 	{
-// 		std::cerr << "[ERROR] unable to create Broadcaster"
-// 		          << " [status code:" << r.status_code << ", body:\"" << r.text << "\"]" << std::endl;
-//
-// 		return;
-// 	}
-    
+    // 	json body =
+    // 	{
+    // 		{ "id",          this->id          },
+    // 		{ "displayName", "broadcaster"     },
+    // 		{ "device",
+    // 			{
+    // 				{ "name",    "libmediasoupclient"       },
+    // 				{ "version", mediasoupclient::Version() }
+    // 			}
+    // 		},
+    // 		{ "rtpCapabilities", this->device.GetRtpCapabilities() }
+    // 	};
+    //
+    // 	auto r = cpr::PostAsync(
+    // 	           cpr::Url{ this->baseUrl + "/broadcasters" },
+    // 	           cpr::Body{ body.dump() },
+    // 	           cpr::Header{ { "Content-Type", "application/json" } },
+    // 	           cpr::VerifySsl{ verifySsl })
+    // 	           .get();
+    //
+    // 	if (r.status_code != 200)
+    // 	{
+    // 		std::cerr << "[ERROR] unable to create Broadcaster"
+    // 		          << " [status code:" << r.status_code << ", body:\"" << r.text << "\"]" << std::endl;
+    //
+    // 		return;
+    // 	}
+
     return this->device.GetRtpCapabilities();
 }
 
 int Broadcaster::CreateTransport(const nlohmann::json transportInfo) {
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "transportInfoaaaaaa %{public}s\n",transportInfo.dump().c_str());
-    this->CreateSendTransport(true, false,transportInfo);
-    this->CreateRecvTransport(transportInfo);    
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "transportInfoaaaaaa %{public}s\n",
+                 transportInfo.dump().c_str());
+    this->CreateSendTransport(true, false, transportInfo);
+    this->CreateRecvTransport(transportInfo);
     return 0;
 }
 
- int Broadcaster::createConsumer(const nlohmann::json consumeInfo){
+int Broadcaster::createConsumer(const nlohmann::json consumeInfo) {
     auto response = consumeInfo;
-    
-    if (response.find("id") == response.end())
-    {
+
+    if (response.find("id") == response.end()) {
         std::cerr << "[ERROR] 'id' missing in response" << std::endl;
         return -1;
     }
     auto id = response["id"].get<std::string>();
-    
-    if (response.find("producerId") == response.end())
-    {
+
+    if (response.find("producerId") == response.end()) {
         std::cerr << "[ERROR] 'producerId' missing in response" << std::endl;
         return -1;
     }
     auto producerId = response["producerId"].get<std::string>();
-    
-    if (response.find("kind") == response.end())
-    {
+
+    if (response.find("kind") == response.end()) {
         std::cerr << "[ERROR] 'kind' missing in response" << std::endl;
         return -1;
     }
     auto kind = response["kind"].get<std::string>();
-    
-    if (response.find("rtpParameters") == response.end())
-    {
+
+    if (response.find("rtpParameters") == response.end()) {
         std::cerr << "[ERROR] 'rtpParameters' missing in response" << std::endl;
         return -1;
     }
     auto rtpParameters = response["rtpParameters"].get<nlohmann::json>();
-    
-    if (response.find("appData") == response.end())
-    {
+
+    if (response.find("appData") == response.end()) {
         std::cerr << "[ERROR] 'appData' missing in response" << std::endl;
         return -1;
     }
     auto appData = response["appData"].get<nlohmann::json>();
-    
+
     // Create client consumer.
-    
+
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "recvTransportGetId3 %{public}lu\n",std::this_thread::get_id());
-    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "recvTransportGetId %{public}s\n",this->recvTransport->GetId().c_str());
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "recvTransportGetId3 %{public}lu\n",
+                 std::this_thread::get_id());
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "recvTransportGetId %{public}s\n",
+                 this->recvTransport->GetId().c_str());
     if (kind == "video") {
-        this->videoConsumer = this->recvTransport->Consume(this,id,producerId,kind,&rtpParameters,appData);
-        
-        auto track =  this->videoConsumer->GetTrack();
-//         track.
-    }
-    else {
-//         this->audioConsumer = this->recvTransport->Consume(this,id,producerId,kind,&rtpParameters,appData);
+        this->videoConsumer = this->recvTransport->Consume(this, id, producerId, kind, &rtpParameters, appData);
+
+        auto track = this->videoConsumer->GetTrack();
+        if (!this->g_wnd) {
+            this->g_wnd = new OhosMainWnd("192.168.3.71", 8888, false, false);
+        }
+        this->g_wnd->StartRemoteRenderer(static_cast<webrtc::VideoTrackInterface *>(track));
+    } else {
+        // this->audioConsumer = this->recvTransport->Consume(this,id,producerId,kind,&rtpParameters,appData);
     }
     return 0;
- }
+}
 
-void Broadcaster::CreateDataConsumer()
-{
+void Broadcaster::CreateDataConsumer() {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] Broadcaster::CreateDataConsumer()\n");
-	const std::string& dataProducerId = this->dataProducer->GetId();
+    const std::string &dataProducerId = this->dataProducer->GetId();
 
-	/* clang-format off */
-	json body =
-	{
-		{ "dataProducerId", dataProducerId }
-	};
-    /* clang-format on */
+    json body = {{"dataProducerId", dataProducerId}};
     // create server data consumer
     // 	auto r = cpr::PostAsync(
     // 	           cpr::Url{ this->baseUrl + "/broadcasters/" + this->id + "/transports/" +
@@ -385,12 +373,7 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast, const
         OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "[INFO] 开始推流 audio\n");
         auto audioTrack = createAudioTrack(std::to_string(rtc::CreateRandomId()));
 
-        /* clang-format off */
-        json codecOptions = {
-            { "opusStereo", true },
-            { "opusDtx",		true }
-        };
-        /* clang-format on */
+        json codecOptions = {{"opusStereo", true}, {"opusDtx", true}};
         this->sendTransport->Produce(this, audioTrack.get(), nullptr, &codecOptions, nullptr);
     } else {
         std::cerr << "[WARN] cannot produce audio" << std::endl;

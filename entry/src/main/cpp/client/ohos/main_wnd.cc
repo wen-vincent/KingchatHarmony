@@ -39,29 +39,22 @@ namespace {
 // OhosMainWnd instance.
 //
 struct UIThreadCallbackData {
-    explicit UIThreadCallbackData(MainWndCallback* cb, int id, void* d)
-        : callback(cb), msg_id(id), data(d) {}
-    MainWndCallback* callback;
+    explicit UIThreadCallbackData(MainWndCallback *cb, int id, void *d) : callback(cb), msg_id(id), data(d) {}
+    MainWndCallback *callback;
     int msg_id;
-    void* data;
+    void *data;
 };
 
 bool HandleUIThreadCallback(void *data) {
-    UIThreadCallbackData* cb_data = reinterpret_cast<UIThreadCallbackData*>(data);
+    UIThreadCallbackData *cb_data = reinterpret_cast<UIThreadCallbackData *>(data);
     cb_data->callback->UIThreadCallback(cb_data->msg_id, cb_data->data);
     delete cb_data;
     return false;
 }
-}  // namespace
+} // namespace
 
-OhosMainWnd::OhosMainWnd(const char* server,
-                       int port,
-                       bool autoconnect,
-                       bool autocall)
-    : server_(server),
-      port_(port),
-      autoconnect_(autoconnect),
-      autocall_(autocall) {
+OhosMainWnd::OhosMainWnd(const char *server, int port, bool autoconnect, bool autocall)
+    : server_(server), port_(port), autoconnect_(autoconnect), autocall_(autocall) {
     RTC_LOG(LS_INFO) << __FUNCTION__;
     char buffer[10];
     RTC_LOG(LS_INFO) << server << ":" << port_;
@@ -73,21 +66,16 @@ OhosMainWnd::OhosMainWnd(const char* server,
     mutex_ = PTHREAD_MUTEX_INITIALIZER;
 }
 
-OhosMainWnd::~OhosMainWnd() {
-    RTC_DCHECK(!IsWindow());
-}
+OhosMainWnd::~OhosMainWnd() { RTC_DCHECK(!IsWindow()); }
 
-void OhosMainWnd::RegisterObserver(MainWndCallback* callback) {
-    callback_ = callback;
-}
+void OhosMainWnd::RegisterObserver(MainWndCallback *callback) { callback_ = callback; }
 
 bool OhosMainWnd::IsWindow() {
-//    RTC_LOG(LS_INFO) << __FUNCTION__;
+    //    RTC_LOG(LS_INFO) << __FUNCTION__;
     return window_;
 }
 
-void OhosMainWnd::Create(std::string s, int p)
-{
+void OhosMainWnd::Create(std::string s, int p) {
     RTC_DCHECK(window_ == false);
     RTC_LOG(LS_INFO) << __FUNCTION__;
     window_ = true;
@@ -95,20 +83,15 @@ void OhosMainWnd::Create(std::string s, int p)
     port_ = p;
 }
 
-void OhosMainWnd::Destroy()
-{
-    window_ = false;
-}
+void OhosMainWnd::Destroy() { window_ = false; }
 
-void OhosMainWnd::PushEvent(int e)
-{
+void OhosMainWnd::PushEvent(int e) {
     pthread_mutex_lock(&mutex_);
     events_ = e;
     pthread_mutex_unlock(&mutex_);
 }
 
-int OhosMainWnd::PopupEvent(int e)
-{
+int OhosMainWnd::PopupEvent(int e) {
     int event = 0;
     pthread_mutex_lock(&mutex_);
     event = events_;
@@ -117,8 +100,7 @@ int OhosMainWnd::PopupEvent(int e)
     return event;
 }
 
-int OhosMainWnd::GetEvent()
-{
+int OhosMainWnd::GetEvent() {
     int event = 0;
     pthread_mutex_lock(&mutex_);
     event = events_;
@@ -126,19 +108,15 @@ int OhosMainWnd::GetEvent()
 
     return event;
 }
-void OhosMainWnd::MessageBox(const char* caption,
-                            const char* text,
-                            bool is_error) {
-}
-void OhosMainWnd::SetServerInfo(const char *server, int port)
-{
+void OhosMainWnd::MessageBox(const char *caption, const char *text, bool is_error) {}
+void OhosMainWnd::SetServerInfo(const char *server, int port) {
     server_ = server;
     port_ = port;
 }
 
-void OhosMainWnd::SwitchToPeerList(const Peers& peers) {
+void OhosMainWnd::SwitchToPeerList(const Peers &peers) {
     RTC_LOG(LS_INFO) << __FUNCTION__;
-OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "SwitchToPeerList");
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "SwitchToPeerList");
     //    peerList_ = peers;
     int j = 0;
     for (Peers::const_iterator i = peers.begin(); i != peers.end(); ++i, j++) {
@@ -163,7 +141,7 @@ MainWindow::UI OhosMainWnd::current_ui() {
     return STREAMING;
 }
 
-void OhosMainWnd::StartLocalRenderer(webrtc::VideoTrackInterface* local_video) {
+void OhosMainWnd::StartLocalRenderer(webrtc::VideoTrackInterface *local_video) {
     RTC_LOG(LS_INFO) << __FUNCTION__;
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "StartLocalRenderer");
     local_renderer_.reset(new VideoRenderer(this, local_video));
@@ -175,8 +153,7 @@ void OhosMainWnd::StopLocalRenderer() {
     local_renderer_.reset();
 }
 
-void OhosMainWnd::StartRemoteRenderer(
-    webrtc::VideoTrackInterface* remote_video) {
+void OhosMainWnd::StartRemoteRenderer(webrtc::VideoTrackInterface *remote_video) {
     RTC_LOG(LS_INFO) << __FUNCTION__;
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "StartRemoteRenderer");
     remote_renderer_.reset(new VideoRenderer(this, remote_video));
@@ -188,9 +165,9 @@ void OhosMainWnd::StopRemoteRenderer() {
     remote_renderer_.reset();
 }
 
-void OhosMainWnd::QueueUIThreadCallback(int msg_id, void* data) {
-//  g_idle_add(HandleUIThreadCallback,
-//             new UIThreadCallbackData(callback_, msg_id, data));
+void OhosMainWnd::QueueUIThreadCallback(int msg_id, void *data) {
+    //  g_idle_add(HandleUIThreadCallback,
+    //             new UIThreadCallbackData(callback_, msg_id, data));
     HandleUIThreadCallback(new UIThreadCallbackData(callback_, msg_id, data));
 }
 
@@ -213,10 +190,7 @@ int OhosMainWnd::getCurrentPeer() {
     return -1;
 }
 
-int OhosMainWnd::GetPeers()
-{
-    return peerList_.size();
-}
+int OhosMainWnd::GetPeers() { return peerList_.size(); }
 
 std::string OhosMainWnd::GetPeerName(int peer_id) {
 
@@ -236,19 +210,12 @@ void OhosMainWnd::DisConnectFromPeer() {
     }
 }
 
-OhosMainWnd::VideoRenderer::VideoRenderer(
-    OhosMainWnd* main_wnd,
-    webrtc::VideoTrackInterface* track_to_render)
-    : width_(0),
-      height_(0),
-      main_wnd_(main_wnd),
-      rendered_track_(track_to_render) {
+OhosMainWnd::VideoRenderer::VideoRenderer(OhosMainWnd *main_wnd, webrtc::VideoTrackInterface *track_to_render)
+    : width_(0), height_(0), main_wnd_(main_wnd), rendered_track_(track_to_render) {
     rendered_track_->AddOrUpdateSink(this, rtc::VideoSinkWants());
 }
 
-OhosMainWnd::VideoRenderer::~VideoRenderer() {
-  rendered_track_->RemoveSink(this);
-}
+OhosMainWnd::VideoRenderer::~VideoRenderer() { rendered_track_->RemoveSink(this); }
 
 void OhosMainWnd::VideoRenderer::SetSize(int width, int height) {
     if (width_ == width && height_ == height) {
@@ -256,26 +223,20 @@ void OhosMainWnd::VideoRenderer::SetSize(int width, int height) {
     }
     width_ = width;
     height_ = height;
+    image_.reset(new uint8_t[width * height * 4]);
 }
+#include "../samples/sample_bitmap.h"
+void OhosMainWnd::VideoRenderer::OnFrame(const webrtc::VideoFrame &video_frame) {
 
-void OhosMainWnd::VideoRenderer::OnFrame(const webrtc::VideoFrame& video_frame) {
-
-    rtc::scoped_refptr<webrtc::I420BufferInterface> buffer(
-        video_frame.video_frame_buffer()->ToI420());
+    rtc::scoped_refptr<webrtc::I420BufferInterface> buffer(video_frame.video_frame_buffer()->ToI420());
     if (video_frame.rotation() != webrtc::kVideoRotation_0) {
         buffer = webrtc::I420Buffer::Rotate(*buffer, video_frame.rotation());
     }
     SetSize(buffer->width(), buffer->height());
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "mytest", "VideoRenderer::OnFrame width:%{public}d height:%{public}d",
+                 buffer->width(), buffer->height());
+    libyuv::I420ToABGR(buffer->DataY(), buffer->StrideY(), buffer->DataU(), buffer->StrideU(), buffer->DataV(),
+                       buffer->StrideV(), image_.get(), width_ * 4, buffer->width(), buffer->height());
 
-    // TODO(bugs.webrtc.org/6857): This conversion is correct for little-endian
-    // only. Cairo ARGB32 treats pixels as 32-bit values in *native* byte order,
-    // with B in the least significant byte of the 32-bit value. Which on
-    // little-endian means that memory layout is BGRA, with the B byte stored at
-    // lowest address. Libyuv's ARGB format (surprisingly?) uses the same
-    // little-endian format, with B in the first byte in memory, regardless of
-    // native endianness.
-    libyuv::I420ToARGB(buffer->DataY(), buffer->StrideY(), buffer->DataU(),
-                       buffer->StrideU(), buffer->DataV(), buffer->StrideV(),
-                       image_.get(), width_ * 4, buffer->width(),
-                       buffer->height());
+    SampleBitMap::NapiDrawPatternNative(nullptr, image_.get());
 }
