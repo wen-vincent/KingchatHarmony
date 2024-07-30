@@ -46,7 +46,7 @@ target_link_libraries(entry PUBLIC ${WEBRTC_LIB_PATH}/libmediasoupclient.a)
 target_link_libraries(entry PUBLIC ${WEBRTC_LIB_PATH}/libsdptransform.a)
 target_link_libraries(entry PUBLIC ${WEBRTC_LIB_PATH}/libwebrtc.a)
 #target_link_libraries(entry PUBLIC ${WEBRTC_LIB_PATH}/libmy_sum.so)
-target_link_libraries(entry PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}../../../../libs/${OHOS_ARCH}/libffmpeg.so)
+#target_link_libraries(entry PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}../../../../libs/${OHOS_ARCH}/libffmpeg.so)
 
 target_compile_definitions(entry PUBLIC -DWEBRTC_POSIX)
 

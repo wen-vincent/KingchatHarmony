@@ -1,20 +1,5 @@
 {
   "app": {
-    "signingConfigs": [
-      {
-        "name": "default",
-        "type": "HarmonyOS",
-        "material": {
-          "certpath": "C:\\Users\\Administrator\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.cer",
-          "storePassword": "0000001BCA960A2B1C5B570E14ABD15BD64FC5135707BBD7C8E9ED827AFA5914C1138B60D5ABF7EF0537F5",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001B96379DC86C9917EAA34EDBA61D845D1F94E2E06A2776FB7888A898866A6B08C3BD18C11BCCCBE1",
-          "profile": "C:\\Users\\Administrator\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\Administrator\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p12"
-        }
-      }
-    ],
     "products": [
       {
         "name": "default",
@@ -25,10 +10,25 @@
     ],
     "buildModeSet": [
       {
-        "name": "debug",
+        "name": "debug"
       },
       {
         "name": "release"
+      }
+    ],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\13823\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.cer",
+          "storePassword": "0000001BE570008CE18235B273B23EAF18F1A874E98F247C03C0F9B27DC9C1CAF05768AA0CB5CBC683F26C",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B5B7D58EABB74B362333F52471B5F3549E51589F405179CBDF69ABC1F2F996377ECE798E9101D9B",
+          "profile": "C:\\Users\\13823\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\13823\\.ohos\\config\\default_KingchatHarmony_46iwjdx0LMijAudLCcfDtV9Fn9JjULo3vbwVijimLLI=.p12"
+        }
       }
     ]
   },
