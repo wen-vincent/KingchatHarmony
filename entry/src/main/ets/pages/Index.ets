@@ -82,7 +82,7 @@ struct Index {
           .shadow(ShadowStyle.OUTER_DEFAULT_LG)
           .onClick(() => {
             abilityAccessCtrl.createAtManager()
-              .requestPermissionsFromUser(getContext(), ['ohos.permission.CAMERA'])
+              .requestPermissionsFromUser(getContext(), ['ohos.permission.CAMERA','ohos.permission.MICROPHONE'])
               .then(async () => {
 
                 let receiverSurfaceId: string = await this.receiver.getReceivingSurfaceId();

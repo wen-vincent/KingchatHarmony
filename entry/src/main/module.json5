@@ -46,6 +46,13 @@
         }
       },
       {
+        "name": "ohos.permission.MICROPHONE",
+        "reason": "$string:camera",
+        "usedScene": {
+          "when": "inuse"
+        }
+      },
+      {
         "name" : "ohos.permission.INTERNET",
         "reason": "$string:internet",
         "usedScene": {
